@@ -251,7 +251,7 @@ def request_microphone() -> Optional[bool]:
         return microphone_granted()
 
 
-def _can_list(path: Path, *, timeout: float = 0.8) -> Optional[bool]:
+def _can_list(path: Path, *, timeout: float = 0.35) -> Optional[bool]:
     """Probe directory listing without blocking the UI on TCC folder prompts.
 
     Listing Desktop/Documents/Downloads can hang indefinitely while macOS waits
@@ -277,7 +277,7 @@ def _can_list(path: Path, *, timeout: float = 0.8) -> Optional[bool]:
 
     th = threading.Thread(target=_probe, daemon=True)
     th.start()
-    th.join(max(0.1, float(timeout)))
+    th.join(max(0.05, float(timeout)))
     if th.is_alive():
         # Likely waiting on a TCC prompt — treat as unknown, not denied.
         return None
@@ -443,17 +443,27 @@ def full_disk_granted() -> Optional[bool]:
 
 
 def files_folders_granted() -> Optional[bool]:
-    """Heuristic: Desktop / Documents / Downloads listing."""
-    results = []
-    for name in ("Desktop", "Documents", "Downloads"):
-        r = _can_list(HOME / name)
-        if r is not None:
-            results.append(r)
-    if not results:
+    """Heuristic: Desktop / Documents / Downloads listing (parallel, short timeout)."""
+    import threading
+
+    names = ("Desktop", "Documents", "Downloads")
+    results: Dict[str, Optional[bool]] = {}
+
+    def _one(name: str) -> None:
+        results[name] = _can_list(HOME / name, timeout=0.35)
+
+    threads = [threading.Thread(target=_one, args=(n,), daemon=True) for n in names]
+    for th in threads:
+        th.start()
+    for th in threads:
+        th.join(0.45)
+
+    known = [v for v in (results.get(n) for n in names) if v is not None]
+    if not known:
         return None
-    if all(results):
+    if all(known):
         return True
-    if any(results):
+    if any(known):
         # Partial — still usable; show as granted with note via status text
         return True
     return False

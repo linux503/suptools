@@ -523,6 +523,9 @@ def run_native() -> None:
         "startup_busy": False,
         "startup_cancel": None,
         "last_startup_result": None,
+        "perms_busy": False,
+        "perms_push_at": 0.0,
+        "last_perms": None,
     }
 
     def apply_window_appearance(theme: Optional[str] = None, glass: Optional[str] = None) -> None:
@@ -1109,6 +1112,34 @@ def run_native() -> None:
         except Exception:
             _log(f"call_js {fn} failed:\n" + traceback.format_exc())
 
+    def push_permissions_status(*, force: bool = False) -> None:
+        """Refresh permission page off the main thread so nav stays responsive.
+
+        Desktop/Documents/Downloads probes can stall on TCC prompts; running them
+        synchronously on the bridge thread made「权限」feel stuck / unclickable.
+        """
+        now = time.time()
+        last_at = float(state.get("perms_push_at") or 0.0)
+        if not force and state.get("perms_busy") and (now - last_at) < 8.0:
+            return
+        if not force and (now - last_at) < 0.4 and state.get("last_perms"):
+            call_js("__setPermissionsStatus", state["last_perms"])
+            return
+        state["perms_busy"] = True
+        state["perms_push_at"] = now
+
+        def work() -> None:
+            try:
+                status = perm_mod.permissions_status(app_name=APP_NAME)
+                state["last_perms"] = status
+                call_js("__setPermissionsStatus", status)
+            except Exception:
+                _log("permissions_status failed:\n" + traceback.format_exc())
+            finally:
+                state["perms_busy"] = False
+
+        threading.Thread(target=work, daemon=True).start()
+
     def push_metrics(s: Snapshot) -> None:
         state["latest"] = s
         visible = False
@@ -1205,11 +1236,7 @@ def run_native() -> None:
                     call_js("__setScreenshotList", shot_mod.folder_payload())
                 elif state["page"] == "rec":
                     call_js("__setRecordingList", rec_mod.folder_payload())
-                elif state["page"] == "perms":
-                    call_js(
-                        "__setPermissionsStatus",
-                        perm_mod.permissions_status(app_name=APP_NAME),
-                    )
+                # perms: handled by permissions_status message from showPage (async)
             elif typ == "open_privacy_settings":
                 kind = str(data.get("kind") or "screen")
                 nk = perm_mod._normalize_kind(kind)
@@ -1223,17 +1250,23 @@ def run_native() -> None:
                 except Exception:
                     pass
                 result = perm_mod.open_privacy_settings(kind)
-                status = perm_mod.permissions_status(app_name=APP_NAME)
-                call_js("__setPermissionGuideResult", {
-                    "ok": bool(result.get("ok")),
-                    "kind": result.get("kind") or nk,
-                    "message": (
-                        "已打开系统设置，请勾选后返回本页查看结果"
-                        if result.get("ok")
-                        else (result.get("error") or "无法打开系统设置")
-                    ),
-                    "status": status,
-                })
+
+                def _after_open() -> None:
+                    status = perm_mod.permissions_status(app_name=APP_NAME)
+                    state["last_perms"] = status
+                    call_js("__setPermissionGuideResult", {
+                        "ok": bool(result.get("ok")),
+                        "kind": result.get("kind") or nk,
+                        "message": (
+                            "已打开系统设置，请勾选后返回本页查看结果"
+                            if result.get("ok")
+                            else (result.get("error") or "无法打开系统设置")
+                        ),
+                        "status": status,
+                    })
+                    call_js("__setPermissionsStatus", status)
+
+                threading.Thread(target=_after_open, daemon=True).start()
             elif typ == "permission_guide":
                 kind = str(data.get("kind") or "screen")
                 call_js(
@@ -1241,30 +1274,34 @@ def run_native() -> None:
                     perm_mod.permission_guide_payload(kind, app_name=APP_NAME),
                 )
             elif typ == "permissions_status":
-                status = perm_mod.permissions_status(app_name=APP_NAME)
-                call_js("__setPermissionsStatus", status)
+                push_permissions_status(force=True)
             elif typ == "permission_request":
                 kind = str(data.get("kind") or "screen")
-                result = perm_mod.request_permission(kind)
-                # Always open settings as well so user can confirm the toggle
-                try:
-                    perm_mod.open_privacy_settings(kind)
-                except Exception:
-                    pass
-                status = result.get("status") or perm_mod.permissions_status(app_name=APP_NAME)
-                granted = result.get("granted")
-                call_js("__setPermissionsStatus", status)
-                call_js("__setPermissionGuideResult", {
-                    "ok": True,
-                    "kind": result.get("kind") or kind,
-                    "granted": granted,
-                    "message": (
-                        "已开启，权限生效"
-                        if granted is True
-                        else "已发起授权，请在系统设置中勾选后点「重新检测」"
-                    ),
-                    "status": status,
-                })
+
+                def _req() -> None:
+                    result = perm_mod.request_permission(kind)
+                    # Always open settings as well so user can confirm the toggle
+                    try:
+                        perm_mod.open_privacy_settings(kind)
+                    except Exception:
+                        pass
+                    status = result.get("status") or perm_mod.permissions_status(app_name=APP_NAME)
+                    state["last_perms"] = status
+                    granted = result.get("granted")
+                    call_js("__setPermissionsStatus", status)
+                    call_js("__setPermissionGuideResult", {
+                        "ok": True,
+                        "kind": result.get("kind") or kind,
+                        "granted": granted,
+                        "message": (
+                            "已开启，权限生效"
+                            if granted is True
+                            else "已发起授权，请在系统设置中勾选后点「重新检测」"
+                        ),
+                        "status": status,
+                    })
+
+                threading.Thread(target=_req, daemon=True).start()
             elif typ == "finder_new_txt":
                 create_finder_txt()
             elif typ == "finder_new_txt_install":
@@ -2508,7 +2545,7 @@ def run_native() -> None:
     def open_perms() -> None:
         show_panel()
         call_js("__navigate", {"page": "perms"})
-        call_js("__setPermissionsStatus", perm_mod.permissions_status(app_name=APP_NAME))
+        push_permissions_status(force=True)
 
     def open_settings() -> None:
         show_panel()
@@ -2569,10 +2606,7 @@ def run_native() -> None:
             # Refresh permission badges when returning from System Settings
             try:
                 if str(state.get("page") or "") == "perms":
-                    call_js(
-                        "__setPermissionsStatus",
-                        perm_mod.permissions_status(app_name=APP_NAME),
-                    )
+                    push_permissions_status(force=True)
                 else:
                     push_settings()
             except Exception:
