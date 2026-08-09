@@ -750,17 +750,31 @@ def permissions_status(*, app_name: str = "SupTools") -> Dict[str, Any]:
     }
 
 
+def screen_permission_message(*, app_name: str = "SupTools") -> str:
+    """User-facing screen-recording deny text that matches the real TCC identity."""
+    look = runtime_tcc_identity().get("look_for") or app_name
+    if look != app_name:
+        return f"需要「屏幕录制」权限：请在系统设置中允许「{look}」（不要只勾 {app_name}）后重试"
+    return f"需要「屏幕录制」权限：请允许 {app_name} 后重试"
+
+
 def looks_like_screen_permission_error(message: str, *, code: Any = None) -> bool:
     text = str(message or "").lower()
     if "not authorized" in text or "notauthorized" in text:
         return True
     if "屏幕录制" in str(message or "") and ("权限" in str(message or "") or "允许" in str(message or "")):
         return True
-    if "screen recording" in text or "screencapture" in text and "author" in text:
+    if "screen recording" in text or ("screencapture" in text and "author" in text):
+        return True
+    if "screencapture" in text and ("denied" in text or "permission" in text or "not permitted" in text):
         return True
     try:
-        if int(code) == 1 and ("author" in text or not text):
-            return "author" in text
+        code_i = int(code)
     except Exception:
-        pass
+        code_i = None
+    # screencapture often exits 1 with empty stderr when Screen Recording is denied
+    if code_i == 1 and (not text or "author" in text or "permission" in text or "denied" in text):
+        if not text:
+            return True
+        return "author" in text or "permission" in text or "denied" in text
     return False

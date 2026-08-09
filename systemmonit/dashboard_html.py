@@ -1306,12 +1306,20 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
     font-variant-numeric: tabular-nums; letter-spacing: -0.2px; flex: 0 0 auto;
   }
   .hero.hide-on-clean { }
+  body[data-page="overview"] .hero { display:none; }
   body[data-page="clean"] .hero { display:none; }
   body[data-page="uninstall"] .hero { display:none; }
   body[data-page="startup"] .hero { display:none; }
+  body[data-page="perms"] .hero { display:none; }
   body[data-page="settings"] .hero { display:none; }
   body[data-page="shot"] .hero { display:none; }
   body[data-page="rec"] .hero { display:none; }
+  body[data-page="conn"] .hero { display:none; }
+  body[data-page="processes"] .hero { display:none; }
+  body[data-page="cpu"] .hero,
+  body[data-page="memory"] .hero,
+  body[data-page="disk"] .hero,
+  body[data-page="network"] .hero { display:none; }
   .rec-live {
     display: none; margin-bottom: 14px; padding: 14px 16px; border-radius: 16px;
     background: linear-gradient(135deg, color-mix(in srgb, #ff3b30 18%, var(--grouped)), var(--grouped));
@@ -1811,7 +1819,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
   }
 </style>
 </head>
-<body data-theme="light" data-glass="medium">
+<body data-theme="light" data-glass="medium" data-page="overview">
 <div id="app">
   <aside>
     <div class="brand">
@@ -1845,6 +1853,8 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
           <option value="500">0.5s</option>
           <option value="1000" selected>1s</option>
           <option value="2000">2s</option>
+          <option value="3000">3s</option>
+          <option value="5000">5s</option>
         </select>
         <button id="pauseBtn">暂停</button>
       </div>
@@ -2085,7 +2095,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
           <div>
             <div class="muted">可清理空间</div>
             <div class="bytes" id="clean-total">—</div>
-            <div class="hint">智能扫描缓存、浏览器、开发工具、Docker、大文件与废纸篓。若扫描不全，请到「工具 → 权限」开启完全磁盘访问。</div>
+            <div class="hint">智能扫描缓存、浏览器、开发工具、Docker、大文件与废纸篓。若扫描不全，请到「侧边栏 → 权限」开启完全磁盘访问。</div>
             <div class="meta">
               <span>安全可清 <b id="clean-safe">0 B</b></span>
               <span>已选 <b id="clean-selected">0 B</b></span>
@@ -2170,7 +2180,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
           <div>
             <div class="muted">已安装应用</div>
             <div class="bytes" id="un-total">—</div>
-            <div class="hint">扫描 Applications 中的应用，并查找偏好设置、缓存、容器等关联残留。若残留扫不全，请到「工具 → 权限」开启完全磁盘访问。</div>
+            <div class="hint">扫描 Applications 中的应用，并查找偏好设置、缓存、容器等关联残留。若残留扫不全，请到「侧边栏 → 权限」开启完全磁盘访问。</div>
             <div class="meta">
               <span>应用 <b id="un-count">0</b></span>
               <span>可卸载 <b id="un-removable">0</b></span>
@@ -2244,7 +2254,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
           <div>
             <div class="muted">启动项 / 开机服务</div>
             <div class="bytes" id="su-total">—</div>
-            <div class="hint">管理登录时自动启动的应用与 LaunchAgent。关闭后下次登录不再自动运行；系统级项目可能需要管理员权限。完整权限请到「工具 → 权限」查看。</div>
+            <div class="hint">管理登录时自动启动的应用与 LaunchAgent。关闭后下次登录不再自动运行；系统级项目可能需要管理员权限。完整权限请到「侧边栏 → 权限」查看。</div>
             <div class="meta">
               <span>启用中 <b id="su-enabled">0</b></span>
               <span>已禁用 <b id="su-disabled">0</b></span>
@@ -2403,7 +2413,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
           </div>
         </div>
         <div class="perm-banner" id="shot-perm-banner">
-          <div class="txt"><b>需要屏幕录制权限</b>截图前请允许 SupTools 访问屏幕。</div>
+          <div class="txt"><b>需要屏幕录制权限</b>截图前请允许系统列表中的 <b>Python</b>（当前运行身份），不要只勾 SupTools。</div>
           <button type="button" class="btn-mini" data-perm="screen">权限引导</button>
         </div>
         <div class="muted" style="margin-top:8px;line-height:1.5">
@@ -2512,7 +2522,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
           </div>
         </div>
         <div class="perm-banner" id="rec-perm-banner">
-          <div class="txt"><b>需要屏幕录制权限</b>录屏前请允许 SupTools；麦克风另需麦克风权限。</div>
+          <div class="txt"><b>需要屏幕录制权限</b>录屏前请允许 <b>Python</b>（当前运行身份）；麦克风另需麦克风权限。</div>
           <button type="button" class="btn-mini" data-perm="screen">权限引导</button>
         </div>
         <div class="muted" style="margin-top:8px;line-height:1.5">
@@ -2623,7 +2633,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
                 <button type="button" class="btn-mini" data-hk-clear="hotkey_shot_full">清除</button>
               </div>
             </div>
-            <div class="hint" id="set-hk-hint">若后台快捷键无效，请到「工具 → 权限」开启辅助功能与屏幕录制。</div>
+            <div class="hint" id="set-hk-hint">若后台快捷键无效，请到「侧边栏 → 权限」开启辅助功能与屏幕录制。</div>
             <div style="margin-top:10px">
               <button type="button" class="btn-mini" data-page-jump="perms">打开权限引导</button>
               <button type="button" class="btn-mini" data-perm="accessibility" style="margin-left:6px">辅助功能</button>
@@ -2889,6 +2899,8 @@ let appSettings = {
   hotkey_rec_stop: 'ctrl+cmd+8',
   finder_new_txt: false,
   finder_new_txt_open: true,
+  screen_ok: false,
+  accessibility_ok: false,
   version: '—'
 };
 let settingsApplying = false;
@@ -2988,41 +3000,51 @@ function stack(el, parts) {
 
 document.getElementById('nav').addEventListener('click', (e) => {
   const btn = e.target.closest('button[data-page]'); if (!btn) return;
-  page = btn.dataset.page;
-  document.body.setAttribute('data-page', page);
-  document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('active', b===btn));
-  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-'+page));
-  $('title').textContent = TITLES[page] || page;
-  if (page === 'clean') {
+  showPage(btn.dataset.page);
+});
+
+function showPage(target) {
+  const next = String(target || 'overview');
+  page = next;
+  document.body.setAttribute('data-page', next);
+  document.querySelectorAll('.nav button[data-page]').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('data-page') === next);
+  });
+  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-'+next));
+  if ($('title')) $('title').textContent = TITLES[next] || next;
+  if (next === 'clean') {
     post({type:'clean_history'});
     if (!cleanItems.length && !cleanBusy) showCleanWelcome();
     else renderCleanList();
   }
-  if (page === 'uninstall') {
+  if (next === 'uninstall') {
     if (!unApps.length && !unBusy) post({type:'uninstall_list'});
     else { renderUnApps(); renderUnLeftovers(); }
   }
-  if (page === 'startup') {
+  if (next === 'startup') {
     if (!suItems.length && !suBusy) post({type:'startup_list'});
     else renderStartupList();
   }
-  if (page === 'perms') {
+  if (next === 'perms') {
     post({type:'permissions_status'});
   }
-  if (page === 'settings') {
+  if (next === 'settings') {
     post({type:'settings_get'});
   }
-  if (page === 'shot') {
+  if (next === 'shot') {
     post({type:'screenshot_list'});
     syncShotPrefsUI();
   }
-  if (page === 'rec') {
+  if (next === 'rec') {
     post({type:'recording_list'});
     syncRecPrefsUI();
   }
+  if (next === 'conn' && typeof renderConn === 'function') {
+    try { renderConn(); } catch(_){}
+  }
   if (state) render(state);
-  post({type:'page', page});
-});
+  post({type:'page', page: next});
+}
 
 $('pauseBtn').onclick = () => {
   paused = !paused;
@@ -3110,10 +3132,11 @@ window.__setInterval = function(payload){
   } catch (e) {}
 };
 window.__navigate = function(payload){
-  const data = typeof payload === 'string' ? JSON.parse(payload) : payload;
-  const target = (data && data.page) || 'overview';
-  const btn = document.querySelector('.nav button[data-page="'+target+'"]');
-  if (btn) btn.click();
+  try {
+    const data = typeof payload === 'string' ? JSON.parse(payload) : payload;
+    const target = (data && data.page) || 'overview';
+    showPage(target);
+  } catch (e) {}
 };
 function setThemeChoice(theme){
   const next = (theme === 'dark' || theme === 'system') ? theme : 'light';
@@ -3513,7 +3536,7 @@ function render(s) {
   const hn = $('host-name'); if (hn) hn.textContent = s.hostname || '本机';
   const meta = $('meta'); if (meta) meta.textContent = (s.chip || '') + '\n' + (s.platform || '');
   const st = $('status'); if (st) st.textContent = s.status_line || '';
-  if (p !== 'clean' && p !== 'uninstall' && p !== 'startup' && p !== 'perms' && p !== 'settings' && p !== 'shot' && p !== 'rec' && p !== 'conn') {
+  if (p !== 'overview' && p !== 'clean' && p !== 'uninstall' && p !== 'startup' && p !== 'perms' && p !== 'settings' && p !== 'shot' && p !== 'rec' && p !== 'conn' && p !== 'processes') {
     renderHero(s);
   }
 
@@ -3522,19 +3545,6 @@ function render(s) {
     set('ov-header', s.hostname || '本机');
     set('ov-sub', s.subtitle || '');
     renderAlerts(s);
-    set('ov-chip', s.chip || '—');
-    set('ov-cores', s.cores_label || '—');
-    set('ov-load', (s.load||[]).join(' / ') || '—');
-    set('ov-uptime', s.uptime || '—');
-    const press = $('ov-pressure');
-    if (press) {
-      const lv = s.mem_pressure || 'normal';
-      press.textContent = s.mem_pressure_cn || ({normal:'正常',warn:'警告',critical:'严重'}[lv] || '正常');
-      press.className = 'pressure-pill' + (lv === 'warn' || lv === 'critical' ? ' ' + lv : '');
-    }
-    const battPill = $('ov-batt-pill');
-    set('ov-battery', s.battery_text || '—');
-    if (battPill) battPill.style.display = (s.has_battery === false && (s.battery_text||'').indexOf('外接')>=0) ? '' : '';
     set('q-cpu', pct(s.cpu_percent, 0));
     set('q-cpu-s', `用户 ${pct(s.cpu_user,0)} · 系统 ${pct(s.cpu_system,0)}`);
     set('q-mem', pct(s.mem_percent, 0));
@@ -3543,42 +3553,6 @@ function render(s) {
     set('q-up', '上行 ' + (s.net_up || '—'));
     set('q-disk', pct(s.disk_percent, 0));
     set('q-disk-s', s.disk_text || '');
-
-    setRing($('ov-cpu-ring'), s.cpu_percent);
-    set('ov-cpu-pct', pct(s.cpu_percent,0));
-    renderKv($('ov-cpu-kv'), [
-      {k:'用户', v: pct(s.cpu_user,1)},
-      {k:'系统', v: pct(s.cpu_system,1)},
-      {k:'空闲', v: pct(s.cpu_idle,1), cls:'good'},
-      {k:'负载', v: (s.load||[]).join(' / ') || '—'},
-    ]);
-    spark($('ov-cpu-spark'), s.cpu_history || [], cssVar('--cpu'));
-
-    setRing($('ov-mem-ring'), s.mem_percent);
-    set('ov-mem-pct', pct(s.mem_percent,0));
-    set('ov-mem-used', s.mem_used || '');
-    renderKv($('ov-mem-kv'), [
-      {k:'已用', v: s.mem_used || '—'},
-      {k:'可用', v: s.mem_available || '—', cls:'good'},
-      {k:'总计', v: s.mem_total || '—'},
-      {k:'压力', v: s.mem_pressure_cn || '—'},
-    ]);
-    stack($('ov-mem-stack'), s.mem_segments || []);
-    set('ov-mem-legend', s.mem_legend || '');
-    spark($('ov-mem-spark'), s.mem_history || [], cssVar('--mem'));
-
-    set('ov-net-down', s.net_down || '—');
-    set('ov-net-up', s.net_up || '—');
-    set('ov-net-iface', s.net_iface || '');
-    spark($('ov-net-spark'), [s.net_down_history||[], s.net_up_history||[]], [cssVar('--down'), cssVar('--up')], true);
-
-    set('ov-disk-name', s.disk_label || '主磁盘');
-    set('ov-disk-pct-label', pct(s.disk_percent, 1));
-    const diskBar = $('ov-disk-bar');
-    if (diskBar) diskBar.style.width = Math.min(100, s.disk_percent||0) + '%';
-    set('ov-disk-text', s.disk_text || '—');
-    set('ov-disk-read', s.disk_read || '—');
-    set('ov-disk-write', s.disk_write || '—');
     renderProcMini($('ov-procs'), s.processes||[], false);
     renderProcMini($('ov-mem-procs'), s.top_mem||[], true);
   }
@@ -4835,8 +4809,16 @@ window.__setStartupResult = function(payload) {
       showSuToast(false, '请前往系统设置', data.error || data.message || '');
     } else if (data.ok) {
       showSuToast(true, data.name ? ('已更新「' + data.name + '」') : '操作完成', data.message || '');
+      suItems.forEach(it => { if (it && it._optPrev) delete it._optPrev; });
     } else {
       showSuToast(false, '操作失败', data.error || data.message || '');
+      // Revert optimistic toggle so the switch matches reality.
+      suItems.forEach(it => {
+        if (!it || !it._optPrev) return;
+        it.disabled = it._optPrev.disabled;
+        it.enabled = it._optPrev.enabled;
+        delete it._optPrev;
+      });
     }
     // Always clear busy here; success path also refreshes the list separately.
     suBusy = false;
@@ -4897,6 +4879,7 @@ if ($('su-list')) $('su-list').addEventListener('click', (e) => {
     if (!window.confirm(tip)) return;
   }
   // Optimistic UI so the switch responds immediately.
+  item._optPrev = { disabled: !!item.disabled, enabled: !!item.enabled };
   item.disabled = !nextEnabled;
   item.enabled = nextEnabled;
   tog.classList.toggle('on', nextEnabled);
@@ -6146,8 +6129,7 @@ document.addEventListener('click', (e) => {
   const jump = e.target.closest('[data-page-jump]');
   if (!jump) return;
   const target = jump.getAttribute('data-page-jump');
-  const navBtn = document.querySelector('.nav button[data-page="'+target+'"]');
-  if (navBtn) navBtn.click();
+  if (target) showPage(target);
 });
 
 function showPermissionGuide(payload){
@@ -6158,7 +6140,7 @@ function showPermissionGuide(payload){
   const steps = $('perm-modal-steps');
   const openBtn = $('perm-modal-open');
   if (title) title.textContent = data.title || '需要权限';
-  if (sub) sub.textContent = data.subtitle || '请在系统设置中允许 SupTools。';
+  if (sub) sub.textContent = data.subtitle || '请在系统设置中允许当前运行身份（多为 Python）。';
   if (steps) {
     const list = Array.isArray(data.steps) ? data.steps : [];
     steps.innerHTML = list.map(s => '<li>'+esc(s)+'</li>').join('');

@@ -910,7 +910,7 @@ def run_native() -> None:
                     or perm_mod.screen_capture_granted() is False
                 ):
                     perm = "screen"
-                    err = "需要「屏幕录制」权限：请允许 SupTools 后重试"
+                    err = perm_mod.screen_permission_message(app_name=APP_NAME)
                 state["clean_events"].put({
                     "kind": "rec_done",
                     "data": {
@@ -961,7 +961,7 @@ def run_native() -> None:
                         and "取消" not in str(err)
                     )
                     if need_perm:
-                        err = "需要「屏幕录制」权限：请允许 SupTools 后重试"
+                        err = perm_mod.screen_permission_message(app_name=APP_NAME)
                         final = {
                             "ok": False,
                             "error": err,
@@ -2624,7 +2624,7 @@ def run_native() -> None:
         on_open_connectivity=open_connectivity,
         on_theme_toggle=toggle_theme,
         on_new_txt=lambda: create_finder_txt(),
-        on_mode_changed=lambda _mode: call_js("__setSettings", prefs.settings_payload()),
+        on_mode_changed=lambda _mode: push_settings(),
     )
 
     hotkey_center = hotkey_mod.HotkeyCenter()

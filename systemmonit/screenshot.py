@@ -122,7 +122,8 @@ def capture(
         need_perm = perm_mod.looks_like_screen_permission_error(msg, code=result.get("code"))
         granted = perm_mod.screen_capture_granted()
         if need_perm or granted is False:
-            msg = "需要「屏幕录制」权限：请允许 SupTools 后重试"
+            msg = perm_mod.screen_permission_message()
+
             need_perm = True
         return {
             "ok": False,

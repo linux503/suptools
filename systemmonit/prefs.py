@@ -377,7 +377,7 @@ def settings_payload() -> Dict[str, Any]:
         "finder_new_txt_open": cfg["finder_new_txt_open"],
         "app_path": _app_path(),
         "config_path": str(CONFIG_PATH),
-        "version": "1.27.0",
+        "version": "1.27.1",
     }
     try:
         from . import finder_newtxt as fnt

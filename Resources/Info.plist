@@ -19,9 +19,9 @@
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.27.0</string>
+    <string>1.27.1</string>
     <key>CFBundleVersion</key>
-    <string>53</string>
+    <string>54</string>
     <key>LSApplicationCategoryType</key>
     <string>public.app-category.utilities</string>
     <key>LSMinimumSystemVersion</key>
@@ -40,6 +40,8 @@
     <true/>
     <key>NSMicrophoneUsageDescription</key>
     <string>录屏开启麦克风时，需要使用麦克风录制旁白或环境音。</string>
+    <key>NSScreenCaptureUsageDescription</key>
+    <string>截图与录屏需要屏幕录制权限，用于捕获屏幕画面。</string>
     <key>NSAppleEventsUsageDescription</key>
     <string>SupTools 需要控制「系统事件」与 Finder，用于管理登录项、复制截图到剪贴板，以及在 Finder 新建文本文档。</string>
     <key>NSDesktopFolderUsageDescription</key>

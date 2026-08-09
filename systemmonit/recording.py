@@ -232,9 +232,9 @@ def start_process(
         need_perm = perm_mod.screen_capture_granted() is False
         return {
             "ok": False,
-            "error": (
-                "需要「屏幕录制」权限：请允许 SupTools 后重试"
-                if need_perm else str(exc)
+                "error": (
+                    perm_mod.screen_permission_message()
+                    if need_perm else str(exc)
             ),
             "path": str(out_path),
             "permission": "screen" if need_perm else "",
