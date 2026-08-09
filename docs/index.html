@@ -3,11 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SupTools · 超级工具箱</title>
-  <meta name="description" content="SupTools — 面向 macOS 的系统工具箱。总览、清理、卸载、启动项、截图录屏，提供 Universal / Apple Silicon / Intel 安装包。" />
-  <meta property="og:title" content="SupTools · 超级工具箱" />
-  <meta property="og:description" content="Mac 系统工具，一个窗口完成日常维护。" />
+  <title>SupTools — 超级工具箱 · Mac 常用工具合集 | 总览 · 清理 · 卸载 · 启动项 · 截图录屏 · 权限</title>
+  <meta name="description" content="SupTools 超级工具箱：Mac 常用工具合集。总览、清理、卸载、启动项、截图录屏与权限管理，提供 Universal / Apple Silicon / Intel 安装包。" />
+  <meta name="keywords" content="SupTools,超级工具箱,Mac工具,macOS清理,卸载残留,启动项管理,截图录屏,系统监控,Apple Silicon,Intel" />
+  <meta property="og:title" content="SupTools — 超级工具箱 · Mac 常用工具合集" />
+  <meta property="og:description" content="总览 · 清理 · 卸载 · 启动项 · 截图录屏 · 权限 — Mac 日常维护，一个窗口完成。" />
   <meta property="og:image" content="assets/shot-overview-web.jpg" />
+  <meta property="og:locale" content="zh_CN" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="canonical" href="https://linux503.github.io/suptools/" />
+  <link rel="alternate" hreflang="zh-Hans" href="https://linux503.github.io/suptools/?lang=zh" />
+  <link rel="alternate" hreflang="en" href="https://linux503.github.io/suptools/?lang=en" />
+  <link rel="alternate" hreflang="x-default" href="https://linux503.github.io/suptools/" />
   <link rel="icon" href="assets/icon-256.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -47,6 +55,9 @@
         var(--bg);
       line-height: 1.65;
       -webkit-font-smoothing: antialiased;
+    }
+    html[lang="en"] body {
+      font-family: Manrope, "Noto Sans SC", system-ui, sans-serif;
     }
     a { color: inherit; text-decoration: none; }
     img { max-width: 100%; height: auto; display: block; }
@@ -104,6 +115,28 @@
       box-shadow: 0 10px 22px rgba(7, 17, 20, 0.16);
     }
     .nav .nav-dl:hover { background: #122028; transform: translateY(-1px); }
+
+    .lang-switch {
+      display: inline-flex; align-items: center; margin-left: 6px;
+      padding: 3px; border-radius: 999px;
+      background: rgba(7, 17, 20, 0.06);
+      border: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+    .lang-switch button {
+      appearance: none; border: 0; cursor: pointer;
+      min-width: 40px; height: 30px; padding: 0 10px; border-radius: 999px;
+      font-family: Manrope, sans-serif; font-size: 12px; font-weight: 800;
+      letter-spacing: 0.02em; color: var(--muted);
+      background: transparent;
+      transition: color .2s ease, background .2s ease, box-shadow .2s ease;
+    }
+    .lang-switch button:hover { color: var(--ink); }
+    .lang-switch button[aria-pressed="true"] {
+      background: var(--surface);
+      color: var(--ink);
+      box-shadow: 0 4px 12px rgba(7, 17, 20, 0.08);
+    }
 
     /* ——— Hero ——— */
     .hero {
@@ -163,6 +196,10 @@
     .hero h1 span {
       display: block; margin-top: 12px; font-size: 0.31em; font-weight: 650;
       letter-spacing: -0.01em; color: rgba(238,247,244,0.64);
+    }
+    .seo-line {
+      margin: 0; max-width: 36em; font-size: 13px; font-weight: 600;
+      letter-spacing: 0.02em; color: rgba(238,247,244,0.48);
     }
     .lede {
       margin: 0; max-width: 28em; font-size: 16.5px; font-weight: 500; color: rgba(238,247,244,0.72);
@@ -426,6 +463,8 @@
       .hero-mark { width: 72px; height: 72px; }
       .shot-card figcaption { display: none; }
       .feature-grid { grid-template-columns: 1fr; }
+      .lang-switch { margin-left: 4px; }
+      .lang-switch button { min-width: 36px; padding: 0 8px; }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -440,12 +479,16 @@
         <img src="assets/icon-256.png" width="32" height="32" alt="" />
         SupTools
       </a>
-      <nav class="nav" aria-label="主导航">
-        <a href="#features">功能</a>
-        <a href="#product">界面</a>
-        <a href="#install">下载</a>
+      <nav class="nav" aria-label="Primary" data-i18n-aria="navLabel">
+        <a href="#features" data-i18n="navFeatures">功能</a>
+        <a href="#product" data-i18n="navProduct">界面</a>
+        <a href="#install" data-i18n="navDownload">下载</a>
         <a href="https://github.com/linux503/suptools">GitHub</a>
-        <a class="nav-dl" href="#install">获取安装包</a>
+        <a class="nav-dl" href="#install" data-i18n="navGet">获取安装包</a>
+        <div class="lang-switch" role="group" aria-label="Language">
+          <button type="button" data-lang="zh" aria-pressed="true">中文</button>
+          <button type="button" data-lang="en" aria-pressed="false">EN</button>
+        </div>
       </nav>
     </div>
   </header>
@@ -455,18 +498,19 @@
       <div class="hero-copy">
         <p class="eyebrow"><i></i>macOS Utility</p>
         <img class="hero-mark" src="assets/icon.png" width="84" height="84" alt="SupTools" />
-        <h1>SupTools<span>超级工具箱</span></h1>
-        <p class="lede">为 Mac 日常维护设计的系统工具：监控、清理、卸载、启动项与截图录屏，集中在一个窗口。</p>
+        <h1>SupTools<span data-i18n="heroTag">超级工具箱</span></h1>
+        <p class="seo-line" data-i18n="seoLine">总览 · 清理 · 卸载 · 启动项 · 截图录屏 · 权限</p>
+        <p class="lede" data-i18n="heroLede">为 Mac 日常维护设计的系统工具：监控、清理、卸载、启动项与截图录屏，集中在一个窗口。</p>
         <div class="cta">
           <a class="btn btn-primary"
              href="https://github.com/linux503/suptools/releases/download/v1.28.0/SupTools-1.28.0-Universal.dmg"
              download>
-            下载 macOS 安装包
+            <span data-i18n="heroCta">下载 macOS 安装包</span>
             <small>Universal · M / Intel</small>
           </a>
-          <a class="btn btn-ghost" href="#install">按芯片选择</a>
+          <a class="btn btn-ghost" href="#install" data-i18n="heroChip">按芯片选择</a>
         </div>
-        <p class="meta-row">v1.28.0 · DMG · macOS 13+ · <a href="#install">全部安装选项</a></p>
+        <p class="meta-row">v1.28.0 · DMG · macOS 13+ · <a href="#install" data-i18n="heroAll">全部安装选项</a></p>
       </div>
       <div class="hero-visual" aria-hidden="true">
         <figure class="shot-frame">
@@ -479,15 +523,15 @@
   <section id="features">
     <div class="shell">
       <p class="kicker reveal">Product</p>
-      <h2 class="title reveal">核心能力</h2>
-      <p class="lead reveal">侧栏只保留真正会用到的功能，打开即可操作。</p>
+      <h2 class="title reveal" data-i18n="featTitle">核心能力</h2>
+      <p class="lead reveal" data-i18n="featLead">侧栏只保留真正会用到的功能，打开即可操作。</p>
       <div class="feature-grid">
-        <article class="feature-card reveal"><div class="n">01</div><h3>总览</h3><p>CPU、内存、网络、磁盘，以及占用最高的进程，便于快速判断机器状态。</p></article>
-        <article class="feature-card reveal"><div class="n">02</div><h3>清理</h3><p>扫描缓存、浏览器、开发文件与废纸篓，勾选后清理，减少磁盘占用。</p></article>
-        <article class="feature-card reveal"><div class="n">03</div><h3>卸载</h3><p>删除应用本体，并尽量查找偏好设置、缓存等关联残留。</p></article>
-        <article class="feature-card reveal"><div class="n">04</div><h3>启动项</h3><p>管理登录项与 LaunchAgent，关闭不需要的开机自启。</p></article>
-        <article class="feature-card reveal"><div class="n">05</div><h3>截图 / 录屏</h3><p>框选、窗口、全屏；支持标记编辑与全局快捷键。</p></article>
-        <article class="feature-card reveal"><div class="n">06</div><h3>权限</h3><p>集中检查屏幕录制、辅助功能等系统隐私权限，按指引开启。</p></article>
+        <article class="feature-card reveal"><div class="n">01</div><h3 data-i18n="f1t">总览</h3><p data-i18n="f1d">CPU、内存、网络、磁盘，以及占用最高的进程，便于快速判断机器状态。</p></article>
+        <article class="feature-card reveal"><div class="n">02</div><h3 data-i18n="f2t">清理</h3><p data-i18n="f2d">扫描缓存、浏览器、开发文件与废纸篓，勾选后清理，减少磁盘占用。</p></article>
+        <article class="feature-card reveal"><div class="n">03</div><h3 data-i18n="f3t">卸载</h3><p data-i18n="f3d">删除应用本体，并尽量查找偏好设置、缓存等关联残留。</p></article>
+        <article class="feature-card reveal"><div class="n">04</div><h3 data-i18n="f4t">启动项</h3><p data-i18n="f4d">管理登录项与 LaunchAgent，关闭不需要的开机自启。</p></article>
+        <article class="feature-card reveal"><div class="n">05</div><h3 data-i18n="f5t">截图 / 录屏</h3><p data-i18n="f5d">框选、窗口、全屏；支持标记编辑与全局快捷键。</p></article>
+        <article class="feature-card reveal"><div class="n">06</div><h3 data-i18n="f6t">权限</h3><p data-i18n="f6d">集中检查屏幕录制、辅助功能等系统隐私权限，按指引开启。</p></article>
       </div>
     </div>
   </section>
@@ -495,21 +539,21 @@
   <section id="product">
     <div class="shell">
       <p class="kicker reveal">Interface</p>
-      <h2 class="title reveal">产品界面</h2>
-      <p class="lead reveal">真实运行截图，保持原始比例。</p>
+      <h2 class="title reveal" data-i18n="uiTitle">产品界面</h2>
+      <p class="lead reveal" data-i18n="uiLead">真实运行截图，保持原始比例。</p>
       <div class="gallery">
         <figure class="shot-card reveal">
-          <img src="assets/shot-overview-web.jpg" width="2640" height="1880" alt="SupTools 总览界面" loading="lazy" />
-          <figcaption>总览</figcaption>
+          <img src="assets/shot-overview-web.jpg" width="2640" height="1880" alt="" data-i18n-alt="altOverview" loading="lazy" />
+          <figcaption data-i18n="f1t">总览</figcaption>
         </figure>
         <div class="stack">
           <figure class="shot-card reveal">
-            <img src="assets/shot-clean-web.jpg" width="2640" height="1880" alt="清理" loading="lazy" />
-            <figcaption>清理</figcaption>
+            <img src="assets/shot-clean-web.jpg" width="2640" height="1880" alt="" data-i18n-alt="altClean" loading="lazy" />
+            <figcaption data-i18n="f2t">清理</figcaption>
           </figure>
           <figure class="shot-card reveal">
-            <img src="assets/shot-startup-web.jpg" width="2640" height="1880" alt="启动项" loading="lazy" />
-            <figcaption>启动项</figcaption>
+            <img src="assets/shot-startup-web.jpg" width="2640" height="1880" alt="" data-i18n-alt="altStartup" loading="lazy" />
+            <figcaption data-i18n="f4t">启动项</figcaption>
           </figure>
         </div>
       </div>
@@ -519,8 +563,8 @@
   <div class="download" id="install">
     <div class="shell">
       <p class="kicker reveal">Download</p>
-      <h2 class="title reveal">下载安装包</h2>
-      <p class="lead reveal">推荐 Universal 综合包（同时支持 M 系列与 Intel）；也可按芯片下载专用包。</p>
+      <h2 class="title reveal" data-i18n="dlTitle">下载安装包</h2>
+      <p class="lead reveal" data-i18n="dlLead">推荐 Universal 综合包（同时支持 M 系列与 Intel）；也可按芯片下载专用包。</p>
 
       <div class="dl-grid">
         <a class="dl preferred reveal"
@@ -528,11 +572,11 @@
            download style="grid-column: 1 / -1">
           <div>
             <div class="chip">Recommended · Universal</div>
-            <strong>综合版 · M 系列 + Intel</strong>
-            <div class="sub">一份安装包同时支持 Apple Silicon 与 Intel · 约 1.9 MB · v1.28.0</div>
+            <strong data-i18n="dlUniTitle">综合版 · M 系列 + Intel</strong>
+            <div class="sub" data-i18n="dlUniSub">一份安装包同时支持 Apple Silicon 与 Intel · 约 1.9 MB · v1.28.0</div>
           </div>
           <div class="action">
-            立即下载
+            <span data-i18n="dlNow">立即下载</span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 4v12"/><path d="M7 11l5 5 5-5"/><path d="M5 20h14"/></svg>
           </div>
         </a>
@@ -541,11 +585,11 @@
            download>
           <div>
             <div class="chip">Apple Silicon</div>
-            <strong>仅 M 系列</strong>
-            <div class="sub">M1 / M2 / M3 / M4 · 约 1.9 MB · v1.28.0</div>
+            <strong data-i18n="dlArmTitle">仅 M 系列</strong>
+            <div class="sub" data-i18n="dlArmSub">M1 / M2 / M3 / M4 · 约 1.9 MB · v1.28.0</div>
           </div>
           <div class="action">
-            立即下载
+            <span data-i18n="dlNow">立即下载</span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 4v12"/><path d="M7 11l5 5 5-5"/><path d="M5 20h14"/></svg>
           </div>
         </a>
@@ -554,27 +598,27 @@
            download>
           <div>
             <div class="chip">Intel</div>
-            <strong>仅 Intel Mac</strong>
-            <div class="sub">x86_64 · 约 2.0 MB · v1.28.0</div>
+            <strong data-i18n="dlIntelTitle">仅 Intel Mac</strong>
+            <div class="sub" data-i18n="dlIntelSub">x86_64 · 约 2.0 MB · v1.28.0</div>
           </div>
           <div class="action">
-            立即下载
+            <span data-i18n="dlNow">立即下载</span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 4v12"/><path d="M7 11l5 5 5-5"/><path d="M5 20h14"/></svg>
           </div>
         </a>
       </div>
 
-      <div class="steps-mini" aria-label="安装步骤">
-        <article class="reveal"><b><em>01</em>下载 DMG</b><span>推荐 Universal；或按芯片选择专用包。</span></article>
-        <article class="reveal"><b><em>02</em>拖到应用程序</b><span>将 SupTools 拖入「应用程序」文件夹。</span></article>
-        <article class="reveal"><b><em>03</em>开启权限</b><span>打开后进入「权限」，按提示开启屏幕录制等。</span></article>
+      <div class="steps-mini" data-i18n-aria="stepsLabel" aria-label="安装步骤">
+        <article class="reveal"><b><em>01</em><span data-i18n="s1t">下载 DMG</span></b><span data-i18n="s1d">推荐 Universal；或按芯片选择专用包。</span></article>
+        <article class="reveal"><b><em>02</em><span data-i18n="s2t">拖到应用程序</span></b><span data-i18n="s2d">将 SupTools 拖入「应用程序」文件夹。</span></article>
+        <article class="reveal"><b><em>03</em><span data-i18n="s3t">开启权限</span></b><span data-i18n="s3d">打开后进入「权限」，按提示开启屏幕录制等。</span></article>
       </div>
 
       <p class="note reveal">
-        首次使用建议开启屏幕录制与辅助功能；清理 / 卸载建议再开完全磁盘访问。
-        <a href="https://github.com/linux503/suptools/releases/tag/v1.28.0">查看 Release 说明</a>
+        <span data-i18n="noteText">首次使用建议开启屏幕录制与辅助功能；清理 / 卸载建议再开完全磁盘访问。</span>
+        <a href="https://github.com/linux503/suptools/releases/tag/v1.28.0" data-i18n="noteRelease">查看 Release 说明</a>
         ·
-        <a href="https://github.com/linux503/suptools">源码仓库</a>
+        <a href="https://github.com/linux503/suptools" data-i18n="noteRepo">源码仓库</a>
       </p>
     </div>
   </div>
@@ -585,12 +629,196 @@
         <img src="assets/icon-256.png" width="28" height="28" alt="" />
         SupTools
       </div>
+      <p data-i18n="footerTag">超级工具箱 · Mac 常用工具合集</p>
       <p><a href="https://github.com/linux503/suptools">github.com/linux503/suptools</a> · MIT License</p>
     </div>
   </footer>
 
   <script>
     (function () {
+      var I18N = {
+        zh: {
+          htmlLang: "zh-Hans",
+          title: "SupTools — 超级工具箱 · Mac 常用工具合集 | 总览 · 清理 · 卸载 · 启动项 · 截图录屏 · 权限",
+          description: "SupTools 超级工具箱：Mac 常用工具合集。总览、清理、卸载、启动项、截图录屏与权限管理，提供 Universal / Apple Silicon / Intel 安装包。",
+          ogTitle: "SupTools — 超级工具箱 · Mac 常用工具合集",
+          ogDescription: "总览 · 清理 · 卸载 · 启动项 · 截图录屏 · 权限 — Mac 日常维护，一个窗口完成。",
+          navLabel: "主导航",
+          navFeatures: "功能",
+          navProduct: "界面",
+          navDownload: "下载",
+          navGet: "获取安装包",
+          heroTag: "超级工具箱",
+          seoLine: "总览 · 清理 · 卸载 · 启动项 · 截图录屏 · 权限",
+          heroLede: "为 Mac 日常维护设计的系统工具：监控、清理、卸载、启动项与截图录屏，集中在一个窗口。",
+          heroCta: "下载 macOS 安装包",
+          heroChip: "按芯片选择",
+          heroAll: "全部安装选项",
+          featTitle: "核心能力",
+          featLead: "侧栏只保留真正会用到的功能，打开即可操作。",
+          f1t: "总览",
+          f1d: "CPU、内存、网络、磁盘，以及占用最高的进程，便于快速判断机器状态。",
+          f2t: "清理",
+          f2d: "扫描缓存、浏览器、开发文件与废纸篓，勾选后清理，减少磁盘占用。",
+          f3t: "卸载",
+          f3d: "删除应用本体，并尽量查找偏好设置、缓存等关联残留。",
+          f4t: "启动项",
+          f4d: "管理登录项与 LaunchAgent，关闭不需要的开机自启。",
+          f5t: "截图 / 录屏",
+          f5d: "框选、窗口、全屏；支持标记编辑与全局快捷键。",
+          f6t: "权限",
+          f6d: "集中检查屏幕录制、辅助功能等系统隐私权限，按指引开启。",
+          uiTitle: "产品界面",
+          uiLead: "真实运行截图，保持原始比例。",
+          altOverview: "SupTools 总览界面",
+          altClean: "清理",
+          altStartup: "启动项",
+          dlTitle: "下载安装包",
+          dlLead: "推荐 Universal 综合包（同时支持 M 系列与 Intel）；也可按芯片下载专用包。",
+          dlUniTitle: "综合版 · M 系列 + Intel",
+          dlUniSub: "一份安装包同时支持 Apple Silicon 与 Intel · 约 1.9 MB · v1.28.0",
+          dlArmTitle: "仅 M 系列",
+          dlArmSub: "M1 / M2 / M3 / M4 · 约 1.9 MB · v1.28.0",
+          dlIntelTitle: "仅 Intel Mac",
+          dlIntelSub: "x86_64 · 约 2.0 MB · v1.28.0",
+          dlNow: "立即下载",
+          stepsLabel: "安装步骤",
+          s1t: "下载 DMG",
+          s1d: "推荐 Universal；或按芯片选择专用包。",
+          s2t: "拖到应用程序",
+          s2d: "将 SupTools 拖入「应用程序」文件夹。",
+          s3t: "开启权限",
+          s3d: "打开后进入「权限」，按提示开启屏幕录制等。",
+          noteText: "首次使用建议开启屏幕录制与辅助功能；清理 / 卸载建议再开完全磁盘访问。",
+          noteRelease: "查看 Release 说明",
+          noteRepo: "源码仓库",
+          footerTag: "超级工具箱 · Mac 常用工具合集"
+        },
+        en: {
+          htmlLang: "en",
+          title: "SupTools — Mac Utility Toolkit | Overview · Clean · Uninstall · Startup · Screenshot · Permissions",
+          description: "SupTools is a Mac utility toolkit for overview, cleaning, uninstall, startup items, screenshots/recording, and permissions. Universal, Apple Silicon, and Intel builds available.",
+          ogTitle: "SupTools — Mac Utility Toolkit",
+          ogDescription: "Overview · Clean · Uninstall · Startup · Screenshot · Permissions — everyday Mac maintenance in one window.",
+          navLabel: "Primary",
+          navFeatures: "Features",
+          navProduct: "Interface",
+          navDownload: "Download",
+          navGet: "Get the app",
+          heroTag: "Mac Utility Toolkit",
+          seoLine: "Overview · Clean · Uninstall · Startup · Screenshot · Permissions",
+          heroLede: "A system toolbox built for everyday Mac care: monitoring, cleaning, uninstall, startup items, and screen capture — all in one window.",
+          heroCta: "Download for macOS",
+          heroChip: "Choose by chip",
+          heroAll: "All install options",
+          featTitle: "Core features",
+          featLead: "The sidebar keeps only the tools you actually use — open and act.",
+          f1t: "Overview",
+          f1d: "CPU, memory, network, disk, and top processes — see machine health at a glance.",
+          f2t: "Clean",
+          f2d: "Scan caches, browsers, developer clutter, and Trash. Select and free disk space.",
+          f3t: "Uninstall",
+          f3d: "Remove the app and hunt down prefs, caches, and leftover files.",
+          f4t: "Startup",
+          f4d: "Manage login items and LaunchAgents. Turn off what you don’t need at boot.",
+          f5t: "Screenshot / Record",
+          f5d: "Region, window, and full screen — with markup tools and global shortcuts.",
+          f6t: "Permissions",
+          f6d: "Check Screen Recording, Accessibility, and other privacy permissions with clear steps.",
+          uiTitle: "Product UI",
+          uiLead: "Real in-app screenshots at native aspect ratio.",
+          altOverview: "SupTools overview",
+          altClean: "Clean",
+          altStartup: "Startup items",
+          dlTitle: "Download",
+          dlLead: "Prefer the Universal build (Apple Silicon + Intel). Chip-specific packages are also available.",
+          dlUniTitle: "Universal · Apple Silicon + Intel",
+          dlUniSub: "One installer for M-series and Intel Macs · ~1.9 MB · v1.28.0",
+          dlArmTitle: "Apple Silicon only",
+          dlArmSub: "M1 / M2 / M3 / M4 · ~1.9 MB · v1.28.0",
+          dlIntelTitle: "Intel Mac only",
+          dlIntelSub: "x86_64 · ~2.0 MB · v1.28.0",
+          dlNow: "Download now",
+          stepsLabel: "Install steps",
+          s1t: "Download the DMG",
+          s1d: "Prefer Universal, or pick a chip-specific build.",
+          s2t: "Drag to Applications",
+          s2d: "Move SupTools into the Applications folder.",
+          s3t: "Grant permissions",
+          s3d: "Open Permissions and enable Screen Recording and related access.",
+          noteText: "On first launch, enable Screen Recording and Accessibility. For Clean / Uninstall, Full Disk Access is recommended.",
+          noteRelease: "Release notes",
+          noteRepo: "Source repo",
+          footerTag: "Mac utility toolkit for everyday care"
+        }
+      };
+
+      var STORAGE_KEY = "suptools-lang";
+
+      function detectLang() {
+        var params = new URLSearchParams(location.search);
+        var q = (params.get("lang") || "").toLowerCase();
+        if (q === "en" || q === "zh") return q;
+        try {
+          var saved = localStorage.getItem(STORAGE_KEY);
+          if (saved === "en" || saved === "zh") return saved;
+        } catch (e) {}
+        var nav = (navigator.language || "").toLowerCase();
+        return nav.indexOf("zh") === 0 ? "zh" : "en";
+      }
+
+      function setMeta(name, content, prop) {
+        var sel = prop ? 'meta[property="' + name + '"]' : 'meta[name="' + name + '"]';
+        var el = document.querySelector(sel);
+        if (el) el.setAttribute("content", content);
+      }
+
+      function applyLang(lang) {
+        var pack = I18N[lang] || I18N.zh;
+        document.documentElement.lang = pack.htmlLang;
+        document.title = pack.title;
+        setMeta("description", pack.description, false);
+        setMeta("og:title", pack.ogTitle, true);
+        setMeta("og:description", pack.ogDescription, true);
+        setMeta("og:locale", lang === "en" ? "en_US" : "zh_CN", true);
+
+        document.querySelectorAll("[data-i18n]").forEach(function (el) {
+          var key = el.getAttribute("data-i18n");
+          if (pack[key] != null) el.textContent = pack[key];
+        });
+        document.querySelectorAll("[data-i18n-alt]").forEach(function (el) {
+          var key = el.getAttribute("data-i18n-alt");
+          if (pack[key] != null) el.setAttribute("alt", pack[key]);
+        });
+        document.querySelectorAll("[data-i18n-aria]").forEach(function (el) {
+          var key = el.getAttribute("data-i18n-aria");
+          if (pack[key] != null) el.setAttribute("aria-label", pack[key]);
+        });
+
+        document.querySelectorAll(".lang-switch button").forEach(function (btn) {
+          btn.setAttribute("aria-pressed", btn.getAttribute("data-lang") === lang ? "true" : "false");
+        });
+
+        try { localStorage.setItem(STORAGE_KEY, lang); } catch (e) {}
+
+        var url = new URL(location.href);
+        url.searchParams.set("lang", lang);
+        history.replaceState(null, "", url.pathname + url.search + url.hash);
+      }
+
+      var current = detectLang();
+      applyLang(current);
+
+      document.querySelectorAll(".lang-switch button").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var next = btn.getAttribute("data-lang");
+          if (next && next !== current) {
+            current = next;
+            applyLang(current);
+          }
+        });
+      });
+
       var topbar = document.getElementById("topbar");
       function onScroll() {
         if (!topbar) return;
@@ -599,9 +827,8 @@
       window.addEventListener("scroll", onScroll, { passive: true });
       onScroll();
 
-      // #download alias → #install
       if (location.hash === "#download") {
-        history.replaceState(null, "", "#install");
+        history.replaceState(null, "", location.pathname + location.search + "#install");
       }
 
       var nodes = document.querySelectorAll(".reveal");
