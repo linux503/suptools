@@ -467,10 +467,14 @@
   <section class="install" id="install">
     <div class="wrap reveal">
       <p class="kicker">Install</p>
-      <h2 class="title">从源码安装</h2>
-      <p class="lead">需要 Python 3.9+ 与 macOS 13+。克隆仓库后一键打包安装到 /Applications。</p>
+      <h2 class="title">下载安装</h2>
+      <p class="lead">macOS 13+。优先下载对应芯片的 DMG；也可以从源码一键打包安装。</p>
+      <div class="install-actions" style="margin-top:0;margin-bottom:28px">
+        <a class="btn btn-dark" href="https://github.com/linux503/suptools/releases/latest">下载最新版本</a>
+        <a class="btn btn-soft" href="https://github.com/linux503/suptools">查看源码</a>
+      </div>
       <div class="terminal">
-        <div class="terminal-bar" aria-hidden="true"><i></i><i></i><i></i><span>Terminal — bash</span></div>
+        <div class="terminal-bar" aria-hidden="true"><i></i><i></i><i></i><span>Terminal — bash · 源码安装</span></div>
         <pre><span class="c">#</span> <span class="p">clone</span>
 git clone https://github.com/linux503/suptools.git
 cd suptools
@@ -482,7 +486,6 @@ python3 -m pip install -r requirements.txt
 ./Scripts/install-to-applications.sh</pre>
       </div>
       <div class="install-actions">
-        <a class="btn btn-dark" href="https://github.com/linux503/suptools">在 GitHub 查看源码</a>
         <a class="btn btn-soft" href="#top">回到顶部</a>
       </div>
     </div>
