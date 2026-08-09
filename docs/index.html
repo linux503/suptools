@@ -265,41 +265,112 @@
     .meta-row { margin: 6px 0 0; font-size: 12.5px; color: rgba(238,247,244,0.45); font-weight: 500; }
     .meta-row a { color: rgba(238,247,244,0.86); text-decoration: underline; text-underline-offset: 3px; }
 
-    .hero-visual { position: relative; min-height: 460px; animation: rise 1s .12s var(--ease) both; }
-    .hero-visual .glow-ring {
-      position: absolute; inset: auto 4% 8% -2%; height: 70%;
-      background: radial-gradient(ellipse at center, rgba(42,212,190,0.28), transparent 68%);
-      filter: blur(18px); pointer-events: none;
+    .hero-visual {
+      position: relative; min-height: 520px;
+      display: grid; place-items: end stretch;
+      padding: 28px 0 36px;
+      animation: rise 1s .12s var(--ease) both;
+      perspective: 1600px;
     }
-    .hero-visual .shot-frame {
-      position: absolute; left: 0; right: -2%; bottom: 0; width: 102%; max-width: none; margin: 0;
-      border-radius: 24px 24px 0 0; overflow: hidden; background: #0d1214;
+    .hero-stage {
+      position: relative; width: 100%;
+      aspect-ratio: 16 / 11.2;
+      transform-style: preserve-3d;
+    }
+    .hero-stage::before {
+      content: ""; position: absolute; left: 8%; right: 8%; bottom: -6%; height: 28%;
+      background: radial-gradient(ellipse at center, rgba(42,212,190,0.34), transparent 70%);
+      filter: blur(22px); pointer-events: none; z-index: 0;
+    }
+
+    .win {
+      position: absolute; inset: 0;
+      border-radius: 16px; overflow: hidden;
+      background: #10171a;
+      border: 1px solid rgba(255,255,255,0.12);
       box-shadow:
-        0 -14px 80px rgba(0,0,0,0.45),
-        0 0 0 1px rgba(255,255,255,0.1),
-        0 0 60px rgba(42,212,190,0.12);
-      transform: perspective(1400px) rotateY(-4deg) translateY(16px);
-      animation: slide-up 1.15s .2s var(--ease) both;
-      transition: transform .5s var(--ease);
+        0 28px 70px rgba(0,0,0,0.45),
+        0 0 0 1px rgba(255,255,255,0.04) inset;
+      transform-origin: 50% 80%;
+      transition:
+        transform .7s var(--ease),
+        opacity .55s var(--ease),
+        filter .55s var(--ease),
+        box-shadow .55s var(--ease);
+      will-change: transform, opacity, filter;
     }
-    .hero-visual .shot-frame:hover {
-      transform: perspective(1400px) rotateY(-1deg) translateY(10px) scale(1.01);
+    .win .chrome {
+      position: absolute; top: 0; left: 0; right: 0; z-index: 3;
+      height: 34px; display: flex; align-items: center; gap: 7px;
+      padding: 0 12px;
+      background: linear-gradient(180deg, rgba(28,36,40,0.92), rgba(16,23,26,0.72));
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      backdrop-filter: blur(10px);
     }
-    .hero-visual .shot-frame::before {
-      content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    .win .chrome .dot {
+      width: 9px; height: 9px; border-radius: 50%;
+      box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.25);
+    }
+    .win .chrome .dot.r { background: #ff5f57; }
+    .win .chrome .dot.y { background: #febc2e; }
+    .win .chrome .dot.g { background: #28c840; }
+    .win .chrome .win-title {
+      margin: 0; flex: 1; text-align: center;
+      font-family: var(--font); font-size: 11px; font-weight: 650;
+      letter-spacing: 0.02em; color: rgba(238,247,244,0.5);
+      line-height: 1; padding-right: 42px;
+    }
+    .win img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: top center;
+      display: block;
+    }
+    .win .veil {
+      position: absolute; inset: 0; z-index: 2; pointer-events: none;
       background:
-        linear-gradient(180deg, transparent 62%, rgba(3,9,12,0.42)),
-        linear-gradient(115deg, rgba(255,255,255,0.08), transparent 40%);
+        linear-gradient(180deg, rgba(16,23,26,0.15) 0 34px, transparent 34px),
+        linear-gradient(180deg, transparent 70%, rgba(3,9,12,0.28));
     }
-    .hero-visual .shot-frame img {
-      width: 100%; height: auto; aspect-ratio: var(--shot-ratio);
-      object-fit: cover; object-position: top center; display: block;
+
+    /* layered positions — driven by data-depth */
+    .win[data-depth="0"] {
+      z-index: 3; opacity: 1; filter: none;
+      transform: translate3d(0, 0, 0) rotateY(-6deg) rotateX(3deg) scale(1);
+      box-shadow:
+        0 34px 80px rgba(0,0,0,0.5),
+        0 0 0 1px rgba(255,255,255,0.1),
+        0 0 50px rgba(42,212,190,0.14);
+    }
+    .win[data-depth="1"] {
+      z-index: 2; opacity: 0.88; filter: brightness(0.85);
+      transform: translate3d(7%, -5%, -40px) rotateY(-10deg) rotateX(4deg) scale(0.92);
+      pointer-events: none;
+    }
+    .win[data-depth="2"] {
+      z-index: 1; opacity: 0.7; filter: brightness(0.72) blur(0.4px);
+      transform: translate3d(14%, -10%, -80px) rotateY(-14deg) rotateX(5deg) scale(0.84);
+      pointer-events: none;
+    }
+
+    .stage-dots {
+      position: absolute; left: 0; right: 0; bottom: -4px;
+      display: flex; justify-content: center; gap: 8px; z-index: 5;
+    }
+    .stage-dots button {
+      appearance: none; border: 0; cursor: pointer; padding: 0;
+      width: 7px; height: 7px; border-radius: 999px;
+      background: rgba(255,255,255,0.28);
+      transition: width .3s var(--ease), background .3s ease;
+    }
+    .stage-dots button[aria-current="true"] {
+      width: 22px; background: rgba(42,212,190,0.95);
+      box-shadow: 0 0 12px rgba(42,212,190,0.45);
     }
 
     @keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
-    @keyframes slide-up {
-      from { opacity: 0; transform: perspective(1400px) rotateY(-8deg) translateY(48px); }
-      to { opacity: 1; transform: perspective(1400px) rotateY(-4deg) translateY(16px); }
+    @keyframes stage-in {
+      from { opacity: 0; transform: translate3d(18px, 36px, 0) rotateY(-12deg); }
+      to { opacity: 1; transform: none; }
     }
     @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
     @keyframes pulse {
@@ -545,13 +616,16 @@
       .hero { min-height: auto; }
       .hero-inner { grid-template-columns: 1fr; gap: 20px; align-items: start; }
       .hero-copy { padding: 28px 0 10px; }
-      .hero-visual { min-height: 290px; margin: 0 -24px; }
-      .hero-visual .shot-frame {
-        position: relative; width: 100%; right: 0; left: 0;
-        transform: none; border-radius: 20px 20px 0 0;
-        animation: rise .9s .1s var(--ease) both;
+      .hero-visual { min-height: 320px; margin: 0; padding: 8px 0 28px; }
+      .hero-stage { aspect-ratio: 16 / 12; }
+      .win[data-depth="0"],
+      .win[data-depth="1"],
+      .win[data-depth="2"] {
+        transform: none; filter: none;
       }
-      .hero-visual .shot-frame:hover { transform: none; }
+      .win[data-depth="0"] { opacity: 1; z-index: 3; }
+      .win[data-depth="1"],
+      .win[data-depth="2"] { opacity: 0; pointer-events: none; }
       .feature-grid, .gallery, .dl-grid, .steps-mini { grid-template-columns: 1fr; }
     }
     @media (max-width: 640px) {
@@ -614,11 +688,38 @@
         </div>
         <p class="meta-row">v1.28.0 · DMG · macOS 13+ · <a href="#install" data-i18n="heroAll">全部安装选项</a></p>
       </div>
-      <div class="hero-visual" aria-hidden="true">
-        <div class="glow-ring"></div>
-        <figure class="shot-frame">
-          <img src="assets/shot-overview-web.jpg" width="2640" height="1880" alt="" />
-        </figure>
+      <div class="hero-visual">
+        <div class="hero-stage" id="heroStage" aria-roledescription="carousel" aria-label="SupTools">
+          <article class="win" data-depth="0" data-label-zh="总览" data-label-en="Overview">
+            <div class="chrome">
+              <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+              <p class="win-title">Overview</p>
+            </div>
+            <div class="veil"></div>
+            <img src="assets/shot-overview-web.jpg" width="2640" height="1880" alt="" />
+          </article>
+          <article class="win" data-depth="1" data-label-zh="清理" data-label-en="Clean">
+            <div class="chrome">
+              <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+              <p class="title">Clean</p>
+            </div>
+            <div class="veil"></div>
+            <img src="assets/shot-clean-web.jpg" width="2640" height="1880" alt="" loading="lazy" />
+          </article>
+          <article class="win" data-depth="2" data-label-zh="启动项" data-label-en="Startup">
+            <div class="chrome">
+              <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+              <p class="title">Startup</p>
+            </div>
+            <div class="veil"></div>
+            <img src="assets/shot-startup-web.jpg" width="2640" height="1880" alt="" loading="lazy" />
+          </article>
+          <div class="stage-dots" role="tablist" aria-label="Screens">
+            <button type="button" aria-current="true" aria-label="1"></button>
+            <button type="button" aria-label="2"></button>
+            <button type="button" aria-label="3"></button>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -942,6 +1043,86 @@
       if (location.hash === "#download") {
         history.replaceState(null, "", location.pathname + location.search + "#install");
       }
+
+      // Hero stacked window carousel
+      (function initHeroStage() {
+        var stage = document.getElementById("heroStage");
+        if (!stage) return;
+        var wins = Array.prototype.slice.call(stage.querySelectorAll(".win"));
+        var dots = Array.prototype.slice.call(stage.querySelectorAll(".stage-dots button"));
+        if (wins.length < 2) return;
+        var index = 0;
+        var timer = null;
+        var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        function lang() {
+          return document.documentElement.lang === "en" ? "en" : "zh";
+        }
+
+        function paintTitles() {
+          var L = lang();
+          wins.forEach(function (w) {
+            var t = w.querySelector(".chrome .win-title");
+            if (!t) return;
+            t.textContent = w.getAttribute(L === "en" ? "data-label-en" : "data-label-zh") || "";
+          });
+        }
+
+        function apply() {
+          var n = wins.length;
+          wins.forEach(function (w, i) {
+            var depth = (i - index + n) % n;
+            if (depth > 2) depth = 2;
+            w.setAttribute("data-depth", String(depth));
+          });
+          dots.forEach(function (d, i) {
+            d.setAttribute("aria-current", i === index ? "true" : "false");
+          });
+          paintTitles();
+        }
+
+        function go(i) {
+          index = (i + wins.length) % wins.length;
+          apply();
+        }
+
+        function next() { go(index + 1); }
+
+        function start() {
+          if (reduce || timer) return;
+          timer = setInterval(next, 3800);
+        }
+        function stop() {
+          if (!timer) return;
+          clearInterval(timer);
+          timer = null;
+        }
+
+        dots.forEach(function (d, i) {
+          d.addEventListener("click", function () {
+            go(i);
+            stop();
+            start();
+          });
+        });
+
+        stage.addEventListener("pointerenter", stop);
+        stage.addEventListener("pointerleave", start);
+        document.addEventListener("visibilitychange", function () {
+          if (document.hidden) stop(); else start();
+        });
+
+        // Re-paint chrome titles when language changes
+        var langBtns = document.querySelectorAll(".lang-switch button");
+        langBtns.forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            setTimeout(paintTitles, 0);
+          });
+        });
+
+        apply();
+        start();
+      })();
 
       // Spotlight follow on cards
       var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
