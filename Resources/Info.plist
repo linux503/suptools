@@ -19,13 +19,13 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.28.0</string>
+	<string>1.29.0</string>
 	<key>CFBundleSupportedPlatforms</key>
 	<array>
 		<string>MacOSX</string>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>56</string>
+	<string>57</string>
 	<key>DTPlatformName</key>
 	<string>macosx</string>
 	<key>LSApplicationCategoryType</key>
