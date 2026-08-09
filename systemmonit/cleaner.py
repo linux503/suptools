@@ -15,6 +15,26 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 HOME = Path.home()
 ProgressCb = Callable[[Dict[str, Any]], None]
 
+
+def _safe_listdir(path: Path, *, timeout: float = 1.0) -> Optional[List[Path]]:
+    """List directory entries without hanging on macOS Files & Folders TCC prompts."""
+    box: Dict[str, Any] = {}
+
+    def _probe() -> None:
+        try:
+            box["v"] = list(path.iterdir())
+        except OSError:
+            box["v"] = None
+        except Exception:
+            box["v"] = None
+
+    th = threading.Thread(target=_probe, daemon=True)
+    th.start()
+    th.join(max(0.1, float(timeout)))
+    if th.is_alive():
+        return None
+    return box.get("v")
+
 # Never touch these under Caches (system-critical or owned by other categories)
 _CACHE_DENY = {
     "CloudKit",
@@ -701,24 +721,25 @@ def scan_detailed(
                     found_items=len(items) + len(found_here),
                     scanned_bytes=sum(x["bytes"] for x in items) + sum(x["bytes"] for x in found_here),
                 )
-                try:
-                    for child in root.iterdir():
-                        if check_cancel() or len(hits) >= max_hits:
-                            break
-                        if child.name.startswith("."):
+                children = _safe_listdir(root, timeout=1.2)
+                if children is None:
+                    # TCC prompt pending / inaccessible — skip rather than freeze UI
+                    children = []
+                for child in children:
+                    if check_cancel() or len(hits) >= max_hits:
+                        break
+                    if child.name.startswith("."):
+                        continue
+                    name_l = child.name.lower()
+                    if not any(name_l.endswith(ext) for ext in exts):
+                        continue
+                    try:
+                        st = child.lstat()
+                        if st.st_size < 5 * 1024 * 1024:
                             continue
-                        name_l = child.name.lower()
-                        if not any(name_l.endswith(ext) for ext in exts):
-                            continue
-                        try:
-                            st = child.lstat()
-                            if st.st_size < 5 * 1024 * 1024:
-                                continue
-                            hits.append((int(st.st_size), child))
-                        except OSError:
-                            continue
-                except OSError:
-                    pass
+                        hits.append((int(st.st_size), child))
+                    except OSError:
+                        continue
             hits.sort(key=lambda x: -x[0])
             for size, fp in hits[:max_hits]:
                 if check_cancel():
@@ -747,6 +768,9 @@ def scan_detailed(
                 if check_cancel() or len(hits) >= max_hits * 2:
                     break
                 if not root.is_dir():
+                    continue
+                # Desktop/Documents/Downloads may block forever on Files & Folders TCC.
+                if _safe_listdir(root, timeout=1.2) is None:
                     continue
                 _emit(
                     progress,

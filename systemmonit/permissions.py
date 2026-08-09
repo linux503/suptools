@@ -251,18 +251,37 @@ def request_microphone() -> Optional[bool]:
         return microphone_granted()
 
 
-def _can_list(path: Path) -> Optional[bool]:
-    try:
-        if not path.exists():
-            return None
-        next(path.iterdir(), None)
-        return True
-    except PermissionError:
-        return False
-    except OSError:
-        return False
-    except Exception:
+def _can_list(path: Path, *, timeout: float = 0.8) -> Optional[bool]:
+    """Probe directory listing without blocking the UI on TCC folder prompts.
+
+    Listing Desktop/Documents/Downloads can hang indefinitely while macOS waits
+    for a Files and Folders consent sheet. Always bound the wait.
+    """
+    import threading
+
+    box: Dict[str, Any] = {}
+
+    def _probe() -> None:
+        try:
+            if not path.exists():
+                box["v"] = None
+                return
+            next(path.iterdir(), None)
+            box["v"] = True
+        except PermissionError:
+            box["v"] = False
+        except OSError:
+            box["v"] = False
+        except Exception:
+            box["v"] = None
+
+    th = threading.Thread(target=_probe, daemon=True)
+    th.start()
+    th.join(max(0.1, float(timeout)))
+    if th.is_alive():
+        # Likely waiting on a TCC prompt — treat as unknown, not denied.
         return None
+    return box.get("v")
 
 
 def runtime_tcc_identity() -> Dict[str, Any]:
@@ -830,6 +849,11 @@ def looks_like_screen_permission_error(message: str, *, code: Any = None) -> boo
     if "screen recording" in text or ("screencapture" in text and "author" in text):
         return True
     if "screencapture" in text and ("denied" in text or "permission" in text or "not permitted" in text):
+        return True
+    # Common macOS screencapture stderr when Screen Recording is off
+    if "could not create image from display" in text:
+        return True
+    if "cannot capture" in text or "failed to capture" in text:
         return True
     try:
         code_i = int(code)
