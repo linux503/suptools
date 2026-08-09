@@ -979,6 +979,14 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
   .perm-all-ok.show { display: block; }
   .perm-all-ok .t { font: 700 14px/1.25 -apple-system, sans-serif; color: var(--text); }
   .perm-all-ok .s { margin-top: 4px; color: var(--text2); font-size: 12px; }
+  .perm-identity {
+    display: none; margin-bottom: 12px; padding: 12px 14px; border-radius: 14px;
+    background: color-mix(in srgb, #ff9f0a 14%, var(--grouped));
+    border: 0.5px solid color-mix(in srgb, #ff9f0a 30%, var(--sep));
+  }
+  .perm-identity.show { display: block; }
+  .perm-identity .t { font: 700 13.5px/1.3 -apple-system, sans-serif; color: var(--text); }
+  .perm-identity .s { margin-top: 4px; color: var(--text2); font-size: 12px; line-height: 1.45; }
   .perm-toast {
     display: none; margin-bottom: 12px; padding: 12px 14px; border-radius: 14px;
     background: color-mix(in srgb, #30d158 12%, var(--grouped));
@@ -2285,7 +2293,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
           <div>
             <div class="muted">权限引导</div>
             <div class="bytes" id="perm-summary-count">—</div>
-            <div class="hint">工具功能依赖系统隐私权限。开启后返回本页会自动检测；每一项成功开启都会提示「已开启」。</div>
+            <div class="hint">工具功能依赖系统隐私权限。开启后返回本页点「重新检测」。注意：请勾选系统列表里的 <b>Python</b>（当前运行身份），只勾 SupTools 往往检测不到。</div>
             <div class="meta">
               <span>推荐已开 <b id="perm-required-ok">0</b>/<b id="perm-required-total">0</b></span>
               <span>全部已开 <b id="perm-granted">0</b>/<b id="perm-total">0</b></span>
@@ -2294,6 +2302,10 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
           <div class="su-actions">
             <button class="btn-ghost" id="perm-refresh" type="button">重新检测</button>
           </div>
+        </div>
+        <div class="perm-identity" id="perm-identity">
+          <div class="t">为什么勾了还显示未开启？</div>
+          <div class="s" id="perm-identity-s"></div>
         </div>
         <div class="perm-all-ok" id="perm-all-ok">
           <div class="t">推荐权限已全部开启</div>
@@ -6043,6 +6055,12 @@ function renderPermissions(payload, opts) {
   if ($('perm-total')) $('perm-total').textContent = String(data.item_count != null ? data.item_count : items.length);
   const allOk = $('perm-all-ok');
   if (allOk) allOk.classList.toggle('show', !!data.all_required_ok);
+  const idBox = $('perm-identity');
+  const idHint = data.identity_hint || (data.identity && data.identity.hint) || '';
+  if (idBox) {
+    idBox.classList.toggle('show', !!idHint);
+    if ($('perm-identity-s')) $('perm-identity-s').textContent = idHint;
+  }
 
   // Announce newly granted permissions
   const newly = [];

@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import ctypes
+import os
 import subprocess
+import sys
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -236,16 +238,124 @@ def _can_list(path: Path) -> Optional[bool]:
         return None
 
 
+def runtime_tcc_identity() -> Dict[str, Any]:
+    """What macOS TCC actually attributes this process to (often Python, not SupTools.app)."""
+    bundle_id = ""
+    bundle_path = ""
+    exe_name = Path(sys.executable).name if getattr(sys, "executable", None) else "python3"
+    display = exe_name
+    try:
+        from Foundation import NSBundle  # type: ignore
+
+        nb = NSBundle.mainBundle()
+        bundle_id = str(nb.bundleIdentifier() or "")
+        bundle_path = str(nb.bundlePath() or "")
+        info = nb.infoDictionary() or {}
+        display = str(
+            info.get("CFBundleDisplayName")
+            or info.get("CFBundleName")
+            or Path(bundle_path).stem
+            or exe_name
+        )
+    except Exception:
+        pass
+
+    app_bundle = (
+        os.environ.get("SUPTOOLS_APP_BUNDLE")
+        or os.environ.get("SYSPULSE_APP_BUNDLE")
+        or os.environ.get("SYSTEMMONIT_APP_BUNDLE")
+        or ""
+    )
+    expected_id = "com.suptools.app"
+    is_app_identity = bundle_id == expected_id or bundle_id.endswith(".suptools.app")
+    # Common launcher case: NSBundle is Python.app while SUPTOOLS_APP_BUNDLE points at SupTools.app
+    mismatch = bool(app_bundle) and not is_app_identity
+    if "python" in (bundle_id or "").lower() or "python" in display.lower():
+        look_for = "Python"
+    elif mismatch:
+        look_for = display or "Python"
+    else:
+        look_for = "SupTools"
+
+    hint = ""
+    if mismatch or not is_app_identity:
+        hint = (
+            f"当前进程身份是「{look_for}」（{bundle_id or exe_name}），"
+            f"不是列表里的「SupTools」本身。"
+            f"请在系统设置中勾选「{look_for}」，点「请求授权」可弹出对应授权框；"
+            f"只勾选 SupTools 时，本页常会仍显示未开启。"
+        )
+    return {
+        "bundle_id": bundle_id,
+        "bundle_path": bundle_path,
+        "executable": str(getattr(sys, "executable", "") or ""),
+        "display_name": display,
+        "look_for": look_for,
+        "app_bundle": app_bundle,
+        "is_app_identity": is_app_identity,
+        "mismatch": mismatch or not is_app_identity,
+        "hint": hint,
+    }
+
+
+def notifications_granted() -> Optional[bool]:
+    """UNUserNotificationCenter authorization: 2=authorized, 3=provisional, 4=ephemeral."""
+    try:
+        from Foundation import NSBundle  # type: ignore
+        import objc  # type: ignore
+
+        b = NSBundle.bundleWithPath_("/System/Library/Frameworks/UserNotifications.framework")
+        if b is not None:
+            b.load()
+        UNUserNotificationCenter = objc.lookUpClass("UserNotifications.UNUserNotificationCenter")
+        if UNUserNotificationCenter is None:
+            UNUserNotificationCenter = objc.lookUpClass("UNUserNotificationCenter")
+        if UNUserNotificationCenter is None:
+            return None
+        center = UNUserNotificationCenter.currentNotificationCenter()
+        box: Dict[str, Any] = {"v": None}
+
+        def _cb(settings) -> None:
+            try:
+                box["v"] = int(settings.authorizationStatus())
+            except Exception:
+                box["v"] = None
+
+        center.getNotificationSettingsWithCompletionHandler_(_cb)
+        from Foundation import NSDate, NSRunLoop  # type: ignore
+
+        for _ in range(40):
+            if box["v"] is not None:
+                break
+            NSRunLoop.currentRunLoop().runUntilDate_(NSDate.dateWithTimeIntervalSinceNow_(0.05))
+        st = box["v"]
+        if st is None:
+            return None
+        if st in (2, 3, 4):  # authorized / provisional / ephemeral
+            return True
+        if st == 1:  # denied
+            return False
+        return False  # notDetermined
+    except Exception:
+        return None
+
+
 def full_disk_granted() -> Optional[bool]:
-    """Heuristic: Full Disk Access usually unlocks Mail / Safari Library trees."""
+    """Heuristic: Full Disk Access usually unlocks Mail / Safari / Messages Library trees."""
     probes = [
         HOME / "Library" / "Mail",
         HOME / "Library" / "Safari",
+        HOME / "Library" / "Messages",
         HOME / "Library" / "Cookies" / "Cookies.binarycookies",
+        HOME / "Library" / "Containers" / "com.apple.mail",
     ]
     saw_deny = False
     saw_ok = False
+    saw_missing = 0
     for p in probes:
+        if not p.exists():
+            saw_missing += 1
+            continue
         if p.is_file():
             try:
                 with open(p, "rb") as fh:
@@ -265,6 +375,9 @@ def full_disk_granted() -> Optional[bool]:
         return True
     if saw_deny:
         return False
+    # Nothing to probe (folders absent) → unknown, don't claim「未开启」
+    if saw_missing >= len(probes):
+        return None
     return None
 
 
@@ -342,59 +455,79 @@ def open_privacy_settings(kind: str = "screen") -> Dict[str, Any]:
 def permission_guide_payload(kind: str, *, app_name: str = "SupTools") -> Dict[str, Any]:
     """Structured copy for the in-app permission modal."""
     key = _normalize_kind(kind)
+    identity = runtime_tcc_identity()
+    look = identity.get("look_for") or app_name
+    mismatch = bool(identity.get("mismatch"))
+    identity_note = ""
+    if mismatch:
+        identity_note = (
+            f"注意：请勾选「{look}」，不要只勾选「{app_name}」。"
+            f"本应用通过 Python 运行，系统按「{look}」记录权限。"
+        )
     guides = {
         "screen": {
             "kind": "screen",
             "title": "需要屏幕录制权限",
-            "subtitle": f"截图与录屏都依赖系统「屏幕录制」权限。请允许 {app_name} 后重试。",
+            "subtitle": (
+                "截图与录屏都依赖系统「屏幕录制」权限。"
+                + (identity_note or f"请允许 {app_name} 后重试。")
+            ),
             "steps": [
                 "打开「系统设置 → 隐私与安全性 → 屏幕录制」",
-                f"在列表中勾选「{app_name}」",
-                f"若刚安装过，可能需要先删除旧项再重新勾选，并重启 {app_name}",
-                "返回本应用，重新截图或录屏",
+                f"在列表中勾选「{look}」" + ("（不是只勾 SupTools）" if mismatch else ""),
+                "也可点本页「请求授权」，用系统弹窗把当前进程加入列表",
+                "勾选后若仍显示未开启，请完全退出应用再打开，然后点「重新检测」",
             ],
             "button": "打开屏幕录制设置",
         },
         "accessibility": {
             "kind": "accessibility",
             "title": "需要辅助功能权限",
-            "subtitle": f"全局快捷键在后台触发时，需要「辅助功能」权限。请允许 {app_name}。",
+            "subtitle": (
+                "全局快捷键需要「辅助功能」权限。"
+                + (identity_note or f"请允许 {app_name}。")
+            ),
             "steps": [
                 "打开「系统设置 → 隐私与安全性 → 辅助功能」",
-                f"在列表中勾选「{app_name}」",
-                "返回后快捷键即可在其他应用前台时使用",
+                f"在列表中勾选「{look}」" + ("（不是只勾 SupTools）" if mismatch else ""),
+                "返回后点「重新检测」；快捷键即可在其他应用前台时使用",
             ],
             "button": "打开辅助功能设置",
         },
         "microphone": {
             "kind": "microphone",
             "title": "需要麦克风权限",
-            "subtitle": f"录屏开启「麦克风」时，系统会请求麦克风权限。请允许 {app_name}。",
+            "subtitle": (
+                "录屏开启「麦克风」时需要麦克风权限。"
+                + (identity_note or f"请允许 {app_name}。")
+            ),
             "steps": [
                 "打开「系统设置 → 隐私与安全性 → 麦克风」",
-                f"在列表中勾选「{app_name}」",
-                "返回后重新开始录屏",
+                f"在列表中勾选「{look}」" + ("（不是只勾 SupTools）" if mismatch else ""),
+                "或点「请求授权」弹出系统对话框，返回后重新录屏",
             ],
             "button": "打开麦克风设置",
         },
         "full_disk": {
             "kind": "full_disk",
             "title": "建议开启完全磁盘访问",
-            "subtitle": f"清理与卸载扫描系统库、邮件/浏览器数据时，完全磁盘访问可避免扫不全。",
+            "subtitle": "清理与卸载扫描系统库时，完全磁盘访问可避免扫不全。"
+            + (f" {identity_note}" if identity_note else ""),
             "steps": [
                 "打开「系统设置 → 隐私与安全性 → 完全磁盘访问权限」",
-                f"点击「+」添加并勾选「{app_name}」",
-                f"按提示重启 {app_name} 后再扫描",
+                f"点击「+」添加并勾选「{look}」",
+                "按提示重启应用后再扫描，并点「重新检测」",
             ],
             "button": "打开完全磁盘访问",
         },
         "automation": {
             "kind": "automation",
             "title": "需要自动化权限",
-            "subtitle": f"启动项登录项、剪贴板与 Finder 服务需要控制「系统事件 / Finder」。",
+            "subtitle": "启动项、剪贴板与 Finder 服务需要控制「系统事件 / Finder」。"
+            + (f" {identity_note}" if identity_note else ""),
             "steps": [
                 "打开「系统设置 → 隐私与安全性 → 自动化」",
-                f"找到「{app_name}」，勾选「系统事件」和「Finder」",
+                f"找到「{look}」，勾选「系统事件」和「Finder」",
                 "返回后重新扫描启动项或使用相关功能",
             ],
             "button": "打开自动化设置",
@@ -402,31 +535,31 @@ def permission_guide_payload(kind: str, *, app_name: str = "SupTools") -> Dict[s
         "files": {
             "kind": "files",
             "title": "需要文件与文件夹权限",
-            "subtitle": "清理大文件 / 安装包等分类会访问桌面、文稿与下载文件夹。",
+            "subtitle": "清理大文件 / 安装包时可能需要桌面、文稿、下载权限。",
             "steps": [
                 "打开「系统设置 → 隐私与安全性 → 文件与文件夹」",
-                f"允许「{app_name}」访问桌面、文稿、下载文件夹",
-                "返回后重新扫描",
+                f"找到「{look}」，按需勾选桌面 / 文稿 / 下载",
+                "返回后点「重新检测」",
             ],
             "button": "打开文件与文件夹",
         },
         "notifications": {
             "kind": "notifications",
-            "title": "建议开启通知",
-            "subtitle": "总览告警达到阈值时可推送到通知中心。",
+            "title": "通知权限",
+            "subtitle": "阈值告警需要系统通知权限。",
             "steps": [
                 "打开「系统设置 → 通知」",
-                f"找到「{app_name}」并允许通知",
-                "在应用设置中保持「系统通知」开启",
+                f"在应用列表中找到「{look}」或「{app_name}」并允许通知",
+                "返回后点「重新检测」",
             ],
             "button": "打开通知设置",
         },
         "login_items": {
             "kind": "login_items",
             "title": "登录项与后台项目",
-            "subtitle": "可在系统设置中管理本机登录项，以及「允许在后台」的项目。",
+            "subtitle": "这是系统设置入口，用于查看登录项；不是隐私开关状态。",
             "steps": [
-                "打开「系统设置 → 通用 → 登录项」",
+                "打开「系统设置 → 通用 → 登录项与扩展」",
                 "按需关闭不需要的登录项或后台项目",
                 "也可在本应用「启动项」页管理 LaunchAgent",
             ],
@@ -434,6 +567,7 @@ def permission_guide_payload(kind: str, *, app_name: str = "SupTools") -> Dict[s
         },
     }
     return dict(guides.get(key) or guides["screen"])
+
 
 
 def request_permission(kind: str) -> Dict[str, Any]:
@@ -500,12 +634,19 @@ def _item(
 
 def permissions_status(*, app_name: str = "SupTools") -> Dict[str, Any]:
     """Full checklist for the in-app permission guide page."""
+    identity = runtime_tcc_identity()
+    look = identity.get("look_for") or "Python"
+    mismatch = bool(identity.get("mismatch"))
+    screen_desc = "捕获屏幕画面；未开启时截图/录屏会失败。"
+    if mismatch:
+        screen_desc += f" 请在系统设置中勾选「{look}」，不要只勾 SupTools。"
+
     items: List[Dict[str, Any]] = [
         _item(
             pid="screen",
             title="屏幕录制",
             used_by="截图 · 录屏",
-            desc="捕获屏幕画面；未开启时截图/录屏会失败。",
+            desc=screen_desc,
             granted=screen_capture_granted(),
             required=True,
             can_request=True,
@@ -514,7 +655,10 @@ def permissions_status(*, app_name: str = "SupTools") -> Dict[str, Any]:
             pid="accessibility",
             title="辅助功能",
             used_by="截图/录屏全局快捷键",
-            desc="后台监听全局快捷键；仅应用内触发可不依赖此项。",
+            desc=(
+                "后台监听全局快捷键；仅应用内触发可不依赖此项。"
+                + (f" 请勾选「{look}」。" if mismatch else "")
+            ),
             granted=accessibility_granted(),
             required=True,
             can_request=True,
@@ -532,7 +676,10 @@ def permissions_status(*, app_name: str = "SupTools") -> Dict[str, Any]:
             pid="full_disk",
             title="完全磁盘访问",
             used_by="清理 · 卸载",
-            desc="完整扫描邮件、浏览器与部分系统库路径，避免扫不全。",
+            desc=(
+                "完整扫描邮件、浏览器与部分系统库路径，避免扫不全。"
+                + (f" 请给「{look}」开启。" if mismatch else "")
+            ),
             granted=full_disk_granted(),
             required=False,
             can_request=False,
@@ -560,20 +707,23 @@ def permissions_status(*, app_name: str = "SupTools") -> Dict[str, Any]:
             title="通知",
             used_by="总览告警",
             desc="CPU/内存等超过阈值时推送系统通知。可在系统设置中开启。",
-            granted=None,
-            required=False,
-            can_request=False,
-        ),
-        _item(
-            pid="login_items",
-            title="登录项（系统）",
-            used_by="启动项管理",
-            desc="在系统设置中查看登录项与「允许在后台」项目；本页可一键打开。",
-            granted=None,
+            granted=notifications_granted(),
             required=False,
             can_request=False,
         ),
     ]
+    login = _item(
+        pid="login_items",
+        title="登录项（系统）",
+        used_by="启动项管理",
+        desc="系统设置入口，用于查看登录项；不表示隐私权限开关状态。",
+        granted=None,
+        required=False,
+        can_request=False,
+    )
+    login["status"] = "info"
+    login["status_text"] = "设置入口"
+    items.append(login)
 
     required = [i for i in items if i.get("required")]
     required_ok = sum(1 for i in required if i.get("granted") is True)
@@ -582,6 +732,8 @@ def permissions_status(*, app_name: str = "SupTools") -> Dict[str, Any]:
 
     return {
         "app_name": app_name,
+        "identity": identity,
+        "identity_hint": identity.get("hint") or "",
         "items": items,
         "item_count": len(items),
         "granted_count": granted_n,
