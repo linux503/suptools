@@ -2303,7 +2303,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
           <div>
             <div class="muted">权限引导</div>
             <div class="bytes" id="perm-summary-count">—</div>
-            <div class="hint">工具功能依赖系统隐私权限。开启后返回本页点「重新检测」。注意：请勾选系统列表里的 <b>Python</b>（当前运行身份），只勾 SupTools 往往检测不到。</div>
+            <div class="hint">工具功能依赖系统隐私权限。开启后返回本页点「重新检测」。截图/录屏请勾选 <b>SupTools</b>；其它项若无效再勾选 <b>Python</b>。</div>
             <div class="meta">
               <span>推荐已开 <b id="perm-required-ok">0</b>/<b id="perm-required-total">0</b></span>
               <span>全部已开 <b id="perm-granted">0</b>/<b id="perm-total">0</b></span>
@@ -2413,7 +2413,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
           </div>
         </div>
         <div class="perm-banner" id="shot-perm-banner">
-          <div class="txt"><b>需要屏幕录制权限</b>截图前请允许系统列表中的 <b>Python</b>（当前运行身份），不要只勾 SupTools。</div>
+          <div class="txt"><b>需要屏幕录制权限</b>截图前请允许系统列表中的 <b>SupTools</b>；勾选后请完全退出再打开。</div>
           <button type="button" class="btn-mini" data-perm="screen">权限引导</button>
         </div>
         <div class="muted" style="margin-top:8px;line-height:1.5">
@@ -2522,7 +2522,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
           </div>
         </div>
         <div class="perm-banner" id="rec-perm-banner">
-          <div class="txt"><b>需要屏幕录制权限</b>录屏前请允许 <b>Python</b>（当前运行身份）；麦克风另需麦克风权限。</div>
+          <div class="txt"><b>需要屏幕录制权限</b>录屏前请允许 <b>SupTools</b>；麦克风另需麦克风权限（可勾选 Python）。</div>
           <button type="button" class="btn-mini" data-perm="screen">权限引导</button>
         </div>
         <div class="muted" style="margin-top:8px;line-height:1.5">

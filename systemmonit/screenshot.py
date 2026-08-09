@@ -13,6 +13,7 @@ from typing import Any, Dict, List, Optional
 
 from .brand import SCREENSHOT_DIRNAME, support_dir
 from . import permissions as perm_mod
+from .native_helper import screencapture_command
 
 CAPTURE = "/usr/sbin/screencapture"
 DEFAULT_DIR = Path.home() / "Pictures" / SCREENSHOT_DIRNAME
@@ -96,7 +97,7 @@ def capture(
     if delay and delay > 0:
         time.sleep(float(delay))
 
-    cmd = [CAPTURE, "-x"]  # mute shutter
+    cmd = screencapture_command(["-x"])  # mute shutter
     if include_cursor and mode == "full":
         cmd.append("-C")
     if mode in ("selection", "window"):

@@ -102,7 +102,21 @@ def _ax_lib() -> Optional[ctypes.CDLL]:
 
 
 def screen_capture_granted() -> Optional[bool]:
-    """Return True/False if API exists; None if unknown."""
+    """Return True/False if API exists; None if unknown.
+
+    Prefer the native SupTools binary so TCC matches System Settings「SupTools」.
+    """
+    try:
+        from .native_helper import native_helper_path, run_helper
+
+        if native_helper_path() is not None:
+            r = run_helper(["--preflight-screen"], timeout=8.0)
+            if r.returncode == 0:
+                text = (r.stdout or "").strip()
+                if text in ("1", "0"):
+                    return text == "1"
+    except Exception:
+        pass
     lib = _cg()
     if lib is None:
         return None
@@ -118,6 +132,19 @@ def screen_capture_granted() -> Optional[bool]:
 
 def request_screen_capture() -> Optional[bool]:
     """Prompt the system Screen Recording permission sheet when possible."""
+    try:
+        from .native_helper import native_helper_path, run_helper
+
+        if native_helper_path() is not None:
+            r = run_helper(["--request-screen"], timeout=60.0)
+            if r.returncode == 0:
+                text = (r.stdout or "").strip()
+                if text in ("1", "0"):
+                    return text == "1"
+            # Re-check after prompt
+            return screen_capture_granted()
+    except Exception:
+        pass
     lib = _cg()
     if lib is None:
         return None
@@ -239,7 +266,7 @@ def _can_list(path: Path) -> Optional[bool]:
 
 
 def runtime_tcc_identity() -> Dict[str, Any]:
-    """What macOS TCC actually attributes this process to (often Python, not SupTools.app)."""
+    """What macOS TCC attributes capture vs UI processes to."""
     bundle_id = ""
     bundle_path = ""
     exe_name = Path(sys.executable).name if getattr(sys, "executable", None) else "python3"
@@ -268,23 +295,36 @@ def runtime_tcc_identity() -> Dict[str, Any]:
     )
     expected_id = "com.suptools.app"
     is_app_identity = bundle_id == expected_id or bundle_id.endswith(".suptools.app")
-    # Common launcher case: NSBundle is Python.app while SUPTOOLS_APP_BUNDLE points at SupTools.app
     mismatch = bool(app_bundle) and not is_app_identity
-    if "python" in (bundle_id or "").lower() or "python" in display.lower():
+
+    helper_ok = False
+    try:
+        from .native_helper import native_helper_path
+
+        helper_ok = native_helper_path() is not None
+    except Exception:
+        helper_ok = False
+
+    if helper_ok:
+        look_for = "SupTools"
+        hint = (
+            "截图 / 录屏请勾选「SupTools」。"
+            "若辅助功能、麦克风或完全磁盘访问仍无效，请同时勾选「Python」，"
+            "然后完全退出应用再打开。"
+        )
+    elif "python" in (bundle_id or "").lower() or "python" in display.lower():
         look_for = "Python"
+        hint = (
+            f"当前进程身份是「{look_for}」（{bundle_id or exe_name}）。"
+            f"请在系统设置中勾选「{look_for}」；只勾 SupTools 时本页常会仍显示未开启。"
+        )
     elif mismatch:
         look_for = display or "Python"
+        hint = f"当前进程身份是「{look_for}」。请在系统设置中勾选「{look_for}」。"
     else:
         look_for = "SupTools"
+        hint = ""
 
-    hint = ""
-    if mismatch or not is_app_identity:
-        hint = (
-            f"当前进程身份是「{look_for}」（{bundle_id or exe_name}），"
-            f"不是列表里的「SupTools」本身。"
-            f"请在系统设置中勾选「{look_for}」，点「请求授权」可弹出对应授权框；"
-            f"只勾选 SupTools 时，本页常会仍显示未开启。"
-        )
     return {
         "bundle_id": bundle_id,
         "bundle_path": bundle_path,
@@ -294,8 +334,10 @@ def runtime_tcc_identity() -> Dict[str, Any]:
         "app_bundle": app_bundle,
         "is_app_identity": is_app_identity,
         "mismatch": mismatch or not is_app_identity,
+        "helper_ok": helper_ok,
         "hint": hint,
     }
+
 
 
 def notifications_granted() -> Optional[bool]:
@@ -458,11 +500,19 @@ def permission_guide_payload(kind: str, *, app_name: str = "SupTools") -> Dict[s
     identity = runtime_tcc_identity()
     look = identity.get("look_for") or app_name
     mismatch = bool(identity.get("mismatch"))
+    helper_ok = bool(identity.get("helper_ok"))
     identity_note = ""
-    if mismatch:
+    if key == "screen" and helper_ok:
+        look = app_name
+        identity_note = ""
+        mismatch = False
+    elif mismatch and key in ("accessibility", "microphone", "full_disk", "automation", "files"):
+        identity_note = (
+            f"注意：请勾选「Python」（界面进程），不要只勾选「{app_name}」。"
+        )
+    elif mismatch:
         identity_note = (
             f"注意：请勾选「{look}」，不要只勾选「{app_name}」。"
-            f"本应用通过 Python 运行，系统按「{look}」记录权限。"
         )
     guides = {
         "screen": {
@@ -474,9 +524,10 @@ def permission_guide_payload(kind: str, *, app_name: str = "SupTools") -> Dict[s
             ),
             "steps": [
                 "打开「系统设置 → 隐私与安全性 → 屏幕录制」",
-                f"在列表中勾选「{look}」" + ("（不是只勾 SupTools）" if mismatch else ""),
-                "也可点本页「请求授权」，用系统弹窗把当前进程加入列表",
-                "勾选后若仍显示未开启，请完全退出应用再打开，然后点「重新检测」",
+                f"在列表中勾选「{look}」"
+                + ("（截图/录屏已改为走 SupTools 进程）" if helper_ok else ("（不是只勾 SupTools）" if mismatch else "")),
+                "也可点本页「请求授权」，用系统弹窗把应用加入列表",
+                "勾选后请完全退出应用再打开，然后点「重新检测」",
             ],
             "button": "打开屏幕录制设置",
         },
@@ -489,7 +540,8 @@ def permission_guide_payload(kind: str, *, app_name: str = "SupTools") -> Dict[s
             ),
             "steps": [
                 "打开「系统设置 → 隐私与安全性 → 辅助功能」",
-                f"在列表中勾选「{look}」" + ("（不是只勾 SupTools）" if mismatch else ""),
+                f"在列表中勾选「{'Python' if helper_ok else look}」"
+                + ("（快捷键在界面进程中监听）" if helper_ok else ("（不是只勾 SupTools）" if mismatch else "")),
                 "返回后点「重新检测」；快捷键即可在其他应用前台时使用",
             ],
             "button": "打开辅助功能设置",
@@ -503,7 +555,8 @@ def permission_guide_payload(kind: str, *, app_name: str = "SupTools") -> Dict[s
             ),
             "steps": [
                 "打开「系统设置 → 隐私与安全性 → 麦克风」",
-                f"在列表中勾选「{look}」" + ("（不是只勾 SupTools）" if mismatch else ""),
+                f"在列表中勾选「{'Python' if helper_ok else look}」"
+                + ("（麦克风由界面进程申请）" if helper_ok else ("（不是只勾 SupTools）" if mismatch else "")),
                 "或点「请求授权」弹出系统对话框，返回后重新录屏",
             ],
             "button": "打开麦克风设置",
@@ -752,10 +805,20 @@ def permissions_status(*, app_name: str = "SupTools") -> Dict[str, Any]:
 
 def screen_permission_message(*, app_name: str = "SupTools") -> str:
     """User-facing screen-recording deny text that matches the real TCC identity."""
-    look = runtime_tcc_identity().get("look_for") or app_name
+    ident = runtime_tcc_identity()
+    look = ident.get("look_for") or app_name
+    if ident.get("helper_ok"):
+        return (
+            f"需要「屏幕录制」权限：请在系统设置中允许「{app_name}」后重试"
+            f"（勾选后请完全退出再打开）"
+        )
     if look != app_name:
-        return f"需要「屏幕录制」权限：请在系统设置中允许「{look}」（不要只勾 {app_name}）后重试"
+        return (
+            f"需要「屏幕录制」权限：请在系统设置中允许「{look}」"
+            f"（不要只勾 {app_name}）后重试"
+        )
     return f"需要「屏幕录制」权限：请允许 {app_name} 后重试"
+
 
 
 def looks_like_screen_permission_error(message: str, *, code: Any = None) -> bool:

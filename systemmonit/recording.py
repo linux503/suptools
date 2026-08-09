@@ -13,6 +13,7 @@ from typing import Any, Dict, List, Optional
 
 from .brand import SCREENSHOT_DIRNAME, support_dir
 from . import permissions as perm_mod
+from .native_helper import screencapture_command
 
 CAPTURE = "/usr/sbin/screencapture"
 DEFAULT_DIR = Path.home() / "Movies" / SCREENSHOT_DIRNAME
@@ -178,24 +179,24 @@ def build_command(
     show_toolbar: bool = True,
 ) -> List[str]:
     mode = mode if mode in ("selection", "full") else "selection"
-    cmd = [CAPTURE, "-x", "-v"]
+    flags = ["-x", "-v"]
     if mode == "selection":
-        cmd.append("-i")
+        flags.append("-i")
         if show_toolbar:
-            cmd.append("-U")
+            flags.append("-U")
     else:
         # Full display (main)
-        cmd.extend(["-D1"])
+        flags.extend(["-D1"])
     if mic:
-        cmd.append("-g")
+        flags.append("-g")
     if system_audio:
-        cmd.append("-A")
+        flags.append("-A")
     if show_clicks:
-        cmd.append("-k")
+        flags.append("-k")
     if max_seconds and max_seconds > 0:
-        cmd.append(f"-V{max(1, int(round(float(max_seconds))))}")
-    cmd.append(str(out_path))
-    return cmd
+        flags.append(f"-V{max(1, int(round(float(max_seconds))))}")
+    flags.append(str(out_path))
+    return screencapture_command(flags)
 
 
 def start_process(

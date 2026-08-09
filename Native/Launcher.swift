@@ -1,11 +1,77 @@
 import Foundation
+import CoreGraphics
+import Darwin
 
 /// Native launcher for SupTools.app (arm64 / x86_64).
-/// Locates bundled resources, sets PYTHONPATH (bundle first), and execs system Python.
+///
+/// Default: locate bundled resources and spawn system Python for the UI.
+/// Extra modes (same binary = com.suptools.app TCC identity):
+///   --preflight-screen
+///   --request-screen
+///   --screencapture <screencapture args...>
 
 func die(_ message: String, code: Int32 = 1) -> Never {
     FileHandle.standardError.write(Data("SupTools: \(message)\n".utf8))
     exit(code)
+}
+
+func writeOut(_ s: String) {
+    FileHandle.standardOutput.write(Data((s + "\n").utf8))
+}
+
+let args = CommandLine.arguments
+
+if args.contains("--preflight-screen") {
+    writeOut(CGPreflightScreenCaptureAccess() ? "1" : "0")
+    exit(0)
+}
+
+if args.contains("--request-screen") {
+    let ok = CGRequestScreenCaptureAccess()
+    writeOut(ok ? "1" : "0")
+    RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.6))
+    exit(0)
+}
+
+if let idx = args.firstIndex(of: "--screencapture") {
+    let forwarded = Array(args.suffix(from: idx + 1))
+    if forwarded.isEmpty {
+        die("missing screencapture arguments", code: 2)
+    }
+    let task = Process()
+    task.executableURL = URL(fileURLWithPath: "/usr/sbin/screencapture")
+    task.arguments = forwarded
+    task.standardInput = FileHandle.standardInput
+    task.standardOutput = FileHandle.standardOutput
+    task.standardError = FileHandle.standardError
+
+    // Let DispatchSource deliver SIGINT/SIGTERM so we can stop child recordings.
+    signal(SIGINT, SIG_IGN)
+    signal(SIGTERM, SIG_IGN)
+    let sigInt = DispatchSource.makeSignalSource(signal: SIGINT, queue: .global())
+    let sigTerm = DispatchSource.makeSignalSource(signal: SIGTERM, queue: .global())
+    let stopChild = {
+        if task.isRunning {
+            task.interrupt()
+            DispatchQueue.global().asyncAfter(deadline: .now() + 1.5) {
+                if task.isRunning { task.terminate() }
+            }
+        }
+    }
+    sigInt.setEventHandler(handler: stopChild)
+    sigTerm.setEventHandler(handler: stopChild)
+    sigInt.resume()
+    sigTerm.resume()
+
+    do {
+        try task.run()
+        task.waitUntilExit()
+        sigInt.cancel()
+        sigTerm.cancel()
+        exit(task.terminationStatus)
+    } catch {
+        die("screencapture failed: \(error)")
+    }
 }
 
 let bundle = Bundle.main
@@ -31,7 +97,6 @@ let userSite: String = {
     return String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
 }()
 
-// Bundle Resources MUST come first so the app never imports a stale package.
 var pythonPathParts = [resources]
 if !userSite.isEmpty {
     pythonPathParts.append(userSite)
@@ -39,14 +104,13 @@ if !userSite.isEmpty {
 if let existing = ProcessInfo.processInfo.environment["PYTHONPATH"], !existing.isEmpty {
     pythonPathParts.append(existing)
 }
-let pythonPath = pythonPathParts.joined(separator: ":")
 
 var env = ProcessInfo.processInfo.environment
-env["PYTHONPATH"] = pythonPath
+env["PYTHONPATH"] = pythonPathParts.joined(separator: ":")
 env["PYTHONUNBUFFERED"] = "1"
 env["SUPTOOLS_APP_BUNDLE"] = bundle.bundlePath
-env["SYSPULSE_APP_BUNDLE"] = bundle.bundlePath // legacy env alias
-env["SYSTEMMONIT_APP_BUNDLE"] = bundle.bundlePath // legacy env alias
+env["SYSPULSE_APP_BUNDLE"] = bundle.bundlePath
+env["SYSTEMMONIT_APP_BUNDLE"] = bundle.bundlePath
 env["TK_SILENCE_DEPRECATION"] = "1"
 
 let logDir = (NSHomeDirectory() as NSString).appendingPathComponent("Library/Logs")
@@ -55,12 +119,11 @@ let errLog = (logDir as NSString).appendingPathComponent("SupTools-stderr.log")
 FileManager.default.createFile(atPath: errLog, contents: nil)
 let errHandle = FileHandle(forWritingAtPath: errLog) ?? FileHandle.standardError
 
-// Prefer system Python (universal). Then Homebrew paths for each chip.
 let pythonCandidates = [
     "/usr/bin/python3",
     "/Library/Developer/CommandLineTools/usr/bin/python3",
-    "/opt/homebrew/bin/python3",      // Apple Silicon Homebrew
-    "/usr/local/bin/python3",         // Intel Homebrew
+    "/opt/homebrew/bin/python3",
+    "/usr/local/bin/python3",
 ]
 
 guard let python = pythonCandidates.first(where: { FileManager.default.isExecutableFile(atPath: $0) }) else {
