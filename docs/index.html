@@ -11,23 +11,24 @@
   <link rel="icon" href="assets/icon-256.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #f4f6f7;
-      --bg-soft: #ebeef0;
+      --bg: #f2f5f4;
+      --bg-2: #e8eeec;
       --surface: #ffffff;
-      --ink: #101820;
-      --text: #1c2832;
-      --muted: #667687;
-      --line: rgba(16, 24, 32, 0.09);
-      --line-strong: rgba(16, 24, 32, 0.14);
-      --teal: #0c7a6e;
-      --teal-deep: #085c54;
-      --teal-soft: rgba(12, 122, 110, 0.10);
-      --shadow: 0 18px 50px rgba(16, 24, 32, 0.10);
-      --radius: 18px;
+      --ink: #0c1418;
+      --text: #1a262c;
+      --muted: #5f717a;
+      --line: rgba(12, 20, 24, 0.09);
+      --line-strong: rgba(12, 20, 24, 0.14);
+      --teal: #0b7268;
+      --teal-deep: #07564f;
+      --teal-mid: #12857a;
+      --teal-soft: rgba(11, 114, 104, 0.11);
+      --gold: #c9943a;
       --shot-ratio: 2640 / 1880;
+      --ease: cubic-bezier(.22, .8, .24, 1);
     }
 
     * { box-sizing: border-box; }
@@ -36,10 +37,7 @@
       margin: 0;
       color: var(--text);
       font-family: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", sans-serif;
-      background:
-        radial-gradient(900px 420px at 100% -10%, rgba(12, 122, 110, 0.08), transparent 55%),
-        radial-gradient(700px 360px at -8% 20%, rgba(16, 24, 32, 0.04), transparent 50%),
-        var(--bg);
+      background: var(--bg);
       line-height: 1.65;
       -webkit-font-smoothing: antialiased;
     }
@@ -49,10 +47,9 @@
       height: auto;
       display: block;
     }
-    button, .btn { font-family: inherit; }
 
     .shell {
-      width: min(1100px, calc(100% - 48px));
+      width: min(1120px, calc(100% - 48px));
       margin: 0 auto;
     }
 
@@ -60,20 +57,20 @@
     .topbar {
       position: sticky;
       top: 0;
-      z-index: 40;
-      backdrop-filter: blur(18px) saturate(1.2);
-      background: rgba(244, 246, 247, 0.82);
+      z-index: 50;
+      backdrop-filter: blur(18px) saturate(1.15);
+      background: rgba(242, 245, 244, 0.78);
       border-bottom: 1px solid transparent;
-      transition: border-color .25s ease, background .25s ease;
+      transition: border-color .25s var(--ease), background .25s var(--ease);
     }
     .topbar.on {
       border-bottom-color: var(--line);
-      background: rgba(244, 246, 247, 0.94);
+      background: rgba(242, 245, 244, 0.94);
     }
     .topbar-inner {
-      width: min(1100px, calc(100% - 48px));
+      width: min(1120px, calc(100% - 48px));
       margin: 0 auto;
-      height: 64px;
+      height: 66px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -83,20 +80,19 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      font-family: Sora, sans-serif;
+      font-family: "Instrument Sans", Sora, sans-serif;
       font-weight: 700;
       font-size: 15px;
       letter-spacing: -0.03em;
       color: var(--ink);
     }
     .brand img {
-      width: 28px;
-      height: 28px;
+      width: 30px;
+      height: 30px;
       aspect-ratio: 1;
       object-fit: contain;
-      border-radius: 7px;
+      border-radius: 8px;
       flex-shrink: 0;
-      box-shadow: 0 4px 12px rgba(16, 24, 32, 0.12);
     }
     .nav {
       display: flex;
@@ -108,35 +104,62 @@
       font-size: 13.5px;
       font-weight: 600;
       color: var(--muted);
-      border-radius: 9px;
+      border-radius: 999px;
       transition: color .2s ease, background .2s ease;
     }
-    .nav a:hover { color: var(--ink); background: rgba(16,24,32,0.05); }
+    .nav a:hover { color: var(--ink); background: rgba(12,20,24,0.05); }
     .nav .nav-dl {
       margin-left: 8px;
       background: var(--ink);
-      color: #f7faf9 !important;
-      padding: 9px 14px;
+      color: #f5faf8 !important;
+      padding: 9px 16px;
     }
-    .nav .nav-dl:hover { background: #1b2833; }
+    .nav .nav-dl:hover { background: #162228; }
 
     /* ——— Hero ——— */
     .hero {
-      padding: 56px 0 28px;
+      position: relative;
+      overflow: hidden;
+      padding: 28px 0 0;
+      min-height: calc(100svh - 66px);
+      display: flex;
+      flex-direction: column;
+      background:
+        radial-gradient(920px 520px at 78% 8%, rgba(18, 133, 122, 0.18), transparent 58%),
+        radial-gradient(700px 420px at 8% 90%, rgba(7, 86, 79, 0.10), transparent 55%),
+        linear-gradient(165deg, #071216 0%, #0c2e33 46%, #0f5f58 100%);
+      color: #eef7f4;
     }
-    .hero-grid {
-      width: min(1100px, calc(100% - 48px));
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.22;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(ellipse 80% 70% at 70% 35%, #000 10%, transparent 75%);
+    }
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      width: min(1120px, calc(100% - 48px));
       margin: 0 auto;
+      flex: 1;
       display: grid;
-      grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
-      gap: 48px;
-      align-items: center;
+      grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+      gap: 36px;
+      align-items: end;
+      padding-top: 28px;
     }
     .hero-copy {
+      padding: 40px 0 56px;
       display: grid;
-      gap: 18px;
-      align-content: start;
-      animation: rise .7s cubic-bezier(.2,.7,.2,1) both;
+      gap: 16px;
+      align-content: center;
+      animation: rise .85s var(--ease) both;
     }
     .eyebrow {
       display: inline-flex;
@@ -144,234 +167,281 @@
       gap: 8px;
       width: fit-content;
       margin: 0;
-      padding: 6px 10px 6px 8px;
-      border-radius: 999px;
-      background: var(--teal-soft);
-      color: var(--teal-deep);
-      font-family: Sora, sans-serif;
+      font-family: "Instrument Sans", sans-serif;
       font-size: 11px;
       font-weight: 700;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
+      color: rgba(238, 247, 244, 0.62);
     }
     .eyebrow i {
-      width: 6px;
-      height: 6px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
-      background: var(--teal);
+      background: #3ecfbd;
+      box-shadow: 0 0 0 4px rgba(62, 207, 189, 0.16);
+      animation: pulse 2.8s ease-in-out infinite;
     }
     .hero-mark {
-      width: 72px;
-      height: 72px;
+      width: 78px;
+      height: 78px;
       aspect-ratio: 1;
       object-fit: contain;
-      border-radius: 18px;
-      box-shadow: var(--shadow);
+      border-radius: 20px;
+      box-shadow: 0 22px 50px rgba(0, 0, 0, 0.35);
+      animation: floaty 7.5s ease-in-out infinite;
     }
     .hero h1 {
       margin: 0;
-      font-family: Sora, "Noto Sans SC", sans-serif;
-      font-weight: 800;
-      font-size: clamp(42px, 6vw, 64px);
-      letter-spacing: -0.05em;
-      line-height: 0.98;
-      color: var(--ink);
+      font-family: "Instrument Sans", "Noto Sans SC", sans-serif;
+      font-weight: 700;
+      font-size: clamp(48px, 7.2vw, 78px);
+      letter-spacing: -0.055em;
+      line-height: 0.94;
+      color: #f7fcfa;
     }
     .hero h1 span {
       display: block;
-      margin-top: 8px;
-      font-size: 0.36em;
+      margin-top: 12px;
+      font-size: 0.32em;
       font-weight: 600;
       letter-spacing: -0.01em;
-      color: var(--muted);
+      color: rgba(238, 247, 244, 0.66);
     }
     .lede {
       margin: 0;
       max-width: 28em;
       font-size: 16.5px;
       font-weight: 500;
-      color: var(--muted);
+      color: rgba(238, 247, 244, 0.72);
     }
     .cta {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-top: 4px;
+      margin-top: 6px;
     }
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      min-height: 48px;
+      min-height: 50px;
       padding: 0 18px;
-      border-radius: 12px;
+      border-radius: 14px;
       font-weight: 700;
       font-size: 14px;
       letter-spacing: -0.01em;
       border: 0;
       cursor: pointer;
-      transition: transform .18s ease, background .2s ease, box-shadow .2s ease;
+      transition: transform .18s var(--ease), background .2s ease, box-shadow .2s ease;
     }
     .btn:hover { transform: translateY(-1px); }
     .btn-primary {
-      background: var(--teal);
-      color: #f7fcfb;
-      box-shadow: 0 12px 28px rgba(12, 122, 110, 0.28);
+      background: #f4fbf9;
+      color: var(--ink);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
     }
-    .btn-primary:hover { background: var(--teal-deep); }
     .btn-primary small {
       font-size: 11px;
       font-weight: 650;
-      opacity: 0.75;
+      opacity: 0.55;
     }
     .btn-ghost {
-      background: var(--surface);
-      color: var(--ink);
-      box-shadow: inset 0 0 0 1px var(--line-strong);
+      background: rgba(255,255,255,0.08);
+      color: #f4fbf9;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.22);
     }
-    .btn-ghost:hover { background: #fbfcfd; }
+    .btn-ghost:hover { background: rgba(255,255,255,0.14); }
     .meta-row {
       margin: 2px 0 0;
       font-size: 12.5px;
-      color: var(--muted);
+      color: rgba(238, 247, 244, 0.48);
       font-weight: 500;
     }
     .meta-row a {
-      color: var(--teal-deep);
-      font-weight: 700;
+      color: rgba(238, 247, 244, 0.82);
       text-decoration: underline;
       text-underline-offset: 3px;
     }
 
     .hero-visual {
-      animation: rise .7s .08s cubic-bezier(.2,.7,.2,1) both;
-    }
-    .shot-frame {
       position: relative;
-      margin: 0;
-      overflow: hidden;
-      border-radius: var(--radius);
-      background: var(--surface);
-      box-shadow:
-        0 0 0 1px var(--line),
-        var(--shadow);
+      min-height: 420px;
+      animation: rise .85s .1s var(--ease) both;
     }
-    .shot-frame img {
+    .hero-visual .shot-frame {
+      position: absolute;
+      left: 0;
+      right: -4%;
+      bottom: 0;
+      width: 104%;
+      max-width: none;
+      margin: 0;
+      border-radius: 20px 20px 0 0;
+      overflow: hidden;
+      background: #111;
+      box-shadow: 0 -8px 60px rgba(0, 0, 0, 0.35);
+      transform: translateY(12px);
+      animation: slide-up 1s .15s var(--ease) both;
+    }
+    .hero-visual .shot-frame img {
       width: 100%;
       height: auto;
       aspect-ratio: var(--shot-ratio);
       object-fit: cover;
       object-position: top center;
+      display: block;
     }
 
     @keyframes rise {
-      from { opacity: 0; transform: translateY(16px); }
+      from { opacity: 0; transform: translateY(18px); }
       to { opacity: 1; transform: none; }
+    }
+    @keyframes slide-up {
+      from { opacity: 0; transform: translateY(36px); }
+      to { opacity: 1; transform: translateY(12px); }
+    }
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 4px rgba(62, 207, 189, 0.16); }
+      50% { box-shadow: 0 0 0 7px rgba(62, 207, 189, 0.08); }
     }
 
     /* ——— Sections ——— */
-    section { padding: 88px 0; }
+    section { padding: 100px 0; }
     .kicker {
-      margin: 0 0 10px;
-      font-family: Sora, sans-serif;
+      margin: 0 0 12px;
+      font-family: "Instrument Sans", sans-serif;
       font-size: 11px;
       font-weight: 700;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
       color: var(--teal-deep);
     }
     .title {
-      margin: 0 0 10px;
-      font-family: Sora, "Noto Sans SC", sans-serif;
-      font-weight: 800;
-      font-size: clamp(28px, 3.6vw, 40px);
-      letter-spacing: -0.04em;
-      line-height: 1.1;
+      margin: 0 0 12px;
+      font-family: "Instrument Sans", "Noto Sans SC", sans-serif;
+      font-weight: 700;
+      font-size: clamp(30px, 4vw, 44px);
+      letter-spacing: -0.045em;
+      line-height: 1.08;
       color: var(--ink);
     }
     .lead {
-      margin: 0 0 40px;
+      margin: 0 0 48px;
       max-width: 34em;
       color: var(--muted);
-      font-size: 16px;
+      font-size: 16.5px;
       font-weight: 500;
     }
 
     .feature-list {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
+      border-top: 1px solid var(--line);
     }
     .feature {
       display: grid;
-      grid-template-columns: 48px minmax(0, 1fr);
-      gap: 4px 14px;
-      padding: 22px 20px;
-      border-radius: 16px;
-      background: var(--surface);
-      box-shadow: inset 0 0 0 1px var(--line);
-      transition: box-shadow .2s ease, transform .2s ease;
+      grid-template-columns: 88px minmax(0, 1fr);
+      gap: 8px 28px;
+      padding: 30px 0;
+      border-bottom: 1px solid var(--line);
+      transition: background .25s ease;
     }
     .feature:hover {
-      transform: translateY(-2px);
-      box-shadow:
-        inset 0 0 0 1px rgba(12, 122, 110, 0.22),
-        0 14px 32px rgba(16, 24, 32, 0.06);
+      background: linear-gradient(90deg, var(--teal-soft), transparent 60%);
     }
     .feature .n {
-      grid-row: 1 / span 2;
-      font-family: Sora, sans-serif;
-      font-size: 18px;
+      font-family: "Instrument Sans", sans-serif;
+      font-size: 22px;
       font-weight: 700;
       letter-spacing: -0.04em;
       color: var(--teal);
       padding-top: 2px;
     }
     .feature h3 {
-      margin: 0;
-      font-family: Sora, "Noto Sans SC", sans-serif;
-      font-size: 17px;
+      margin: 0 0 8px;
+      font-family: "Instrument Sans", "Noto Sans SC", sans-serif;
+      font-size: 21px;
       font-weight: 700;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.03em;
       color: var(--ink);
     }
     .feature p {
       margin: 0;
+      max-width: 40em;
       color: var(--muted);
-      font-size: 14px;
-      line-height: 1.55;
+      font-size: 15px;
     }
 
+    /* Gallery */
+    #product {
+      background:
+        radial-gradient(800px 360px at 100% 0%, rgba(11, 114, 104, 0.07), transparent 55%),
+        linear-gradient(180deg, #eef2f1 0%, var(--bg) 100%);
+      border-block: 1px solid var(--line);
+    }
     .gallery {
       display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 14px;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 16px;
+      align-items: start;
     }
     .gallery .stack {
       display: grid;
-      gap: 14px;
+      gap: 16px;
     }
-    .gallery .shot-frame {
-      height: 100%;
+    .shot-card {
+      margin: 0;
+      position: relative;
+      overflow: hidden;
+      border-radius: 18px;
+      background: var(--surface);
+      box-shadow:
+        0 0 0 1px var(--line),
+        0 22px 50px rgba(12, 20, 24, 0.08);
+      transition: transform .35s var(--ease), box-shadow .35s var(--ease);
     }
-    .gallery .shot-frame img {
-      height: 100%;
-      min-height: 0;
+    .shot-card:hover {
+      transform: translateY(-4px);
+      box-shadow:
+        0 0 0 1px rgba(11, 114, 104, 0.18),
+        0 28px 60px rgba(12, 20, 24, 0.12);
+    }
+    .shot-card img {
+      width: 100%;
+      height: auto;
+      aspect-ratio: var(--shot-ratio);
+      object-fit: cover;
+      object-position: top center;
+    }
+    .shot-card figcaption {
+      position: absolute;
+      left: 14px;
+      bottom: 14px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: rgba(12, 20, 24, 0.72);
+      color: #f5faf8;
+      font-size: 12px;
+      font-weight: 650;
+      letter-spacing: -0.01em;
+      backdrop-filter: blur(8px);
     }
 
-    /* ——— Download ——— */
+    /* Download */
     .download {
-      padding: 88px 0;
+      padding: 100px 0;
       background:
-        linear-gradient(180deg, rgba(255,255,255,0.55), transparent 40%),
-        var(--bg-soft);
-      border-block: 1px solid var(--line);
+        radial-gradient(700px 320px at 0% 0%, rgba(11, 114, 104, 0.08), transparent 55%),
+        var(--bg-2);
     }
     .dl-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      gap: 14px;
       margin-bottom: 18px;
     }
     .dl {
@@ -379,43 +449,45 @@
       flex-direction: column;
       justify-content: space-between;
       gap: 28px;
-      min-height: 168px;
-      padding: 24px;
-      border-radius: 16px;
+      min-height: 176px;
+      padding: 26px 24px 22px;
+      border-radius: 18px;
       background: var(--surface);
       box-shadow: inset 0 0 0 1px var(--line);
-      transition: transform .2s ease, box-shadow .2s ease;
+      transition: transform .25s var(--ease), box-shadow .25s var(--ease);
     }
     .dl:hover {
-      transform: translateY(-2px);
+      transform: translateY(-3px);
       box-shadow:
-        inset 0 0 0 1px rgba(12, 122, 110, 0.25),
-        0 16px 36px rgba(16, 24, 32, 0.07);
+        inset 0 0 0 1px rgba(11, 114, 104, 0.25),
+        0 18px 40px rgba(12, 20, 24, 0.08);
     }
     .dl.preferred {
-      background: linear-gradient(145deg, #0d3a3a 0%, #0c6a60 100%);
+      background:
+        radial-gradient(420px 180px at 100% 0%, rgba(62, 207, 189, 0.18), transparent 60%),
+        linear-gradient(145deg, #0a2f34 0%, #0c6a60 100%);
       color: #eef8f5;
-      box-shadow: 0 16px 40px rgba(8, 92, 84, 0.22);
+      box-shadow: 0 20px 44px rgba(7, 86, 79, 0.24);
     }
     .dl.preferred:hover {
-      box-shadow: 0 20px 44px rgba(8, 92, 84, 0.28);
+      box-shadow: 0 24px 52px rgba(7, 86, 79, 0.3);
     }
     .dl .chip {
-      font-family: Sora, sans-serif;
+      font-family: "Instrument Sans", sans-serif;
       font-size: 11px;
       font-weight: 700;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--muted);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
-    .dl.preferred .chip { color: rgba(238, 248, 245, 0.7); }
+    .dl.preferred .chip { color: rgba(238, 248, 245, 0.68); }
     .dl strong {
       display: block;
-      font-family: Sora, sans-serif;
-      font-size: 22px;
-      font-weight: 750;
-      letter-spacing: -0.03em;
+      font-family: "Instrument Sans", sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.035em;
       color: var(--ink);
     }
     .dl.preferred strong { color: #f7fcfa; }
@@ -424,7 +496,7 @@
       font-size: 13.5px;
       color: var(--muted);
       font-weight: 500;
-      line-height: 1.45;
+      line-height: 1.5;
     }
     .dl.preferred .sub { color: rgba(238, 248, 245, 0.72); }
     .dl .action {
@@ -445,14 +517,14 @@
       margin-top: 28px;
     }
     .steps-mini article {
-      padding: 18px 16px;
-      border-radius: 14px;
-      background: var(--surface);
+      padding: 20px 18px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.72);
       box-shadow: inset 0 0 0 1px var(--line);
     }
     .steps-mini b {
       display: block;
-      font-family: Sora, sans-serif;
+      font-family: "Instrument Sans", sans-serif;
       font-size: 13px;
       font-weight: 700;
       letter-spacing: -0.02em;
@@ -466,7 +538,7 @@
     }
 
     .note {
-      margin: 22px 0 0;
+      margin: 24px 0 0;
       color: var(--muted);
       font-size: 13.5px;
       font-weight: 500;
@@ -478,50 +550,84 @@
     }
 
     footer {
-      padding: 40px 0 56px;
+      padding: 48px 0 64px;
       text-align: center;
       color: var(--muted);
       font-size: 13px;
+      background: var(--bg);
     }
     footer .f-brand {
-      font-family: Sora, sans-serif;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: "Instrument Sans", sans-serif;
       font-weight: 700;
       font-size: 16px;
       letter-spacing: -0.03em;
       color: var(--ink);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
+    }
+    footer .f-brand img {
+      width: 28px;
+      height: 28px;
+      aspect-ratio: 1;
+      object-fit: contain;
+      border-radius: 7px;
     }
     footer a {
       color: var(--teal-deep);
       font-weight: 700;
     }
 
-    @media (max-width: 920px) {
-      .hero { padding-top: 36px; }
-      .hero-grid {
+    @media (max-width: 960px) {
+      .hero { min-height: auto; }
+      .hero-inner {
         grid-template-columns: 1fr;
-        gap: 28px;
+        gap: 20px;
+        align-items: start;
       }
-      .feature-list,
+      .hero-copy { padding: 24px 0 8px; }
+      .hero-visual {
+        min-height: 280px;
+        margin: 0 -24px;
+      }
+      .hero-visual .shot-frame {
+        position: relative;
+        width: 100%;
+        right: 0;
+        left: 0;
+        transform: none;
+        border-radius: 18px 18px 0 0;
+        animation: rise .85s .1s var(--ease) both;
+      }
       .gallery,
       .dl-grid,
       .steps-mini {
         grid-template-columns: 1fr;
       }
-      .gallery .shot-frame img {
-        height: auto;
-      }
     }
     @media (max-width: 640px) {
       .shell,
       .topbar-inner,
-      .hero-grid {
+      .hero-inner {
         width: calc(100% - 32px);
       }
       .nav a:not(.nav-dl) { display: none; }
+      .feature {
+        grid-template-columns: 52px 1fr;
+        gap: 4px 14px;
+      }
       section,
-      .download { padding: 64px 0; }
-      .hero-mark { width: 64px; height: 64px; }
+      .download { padding: 72px 0; }
+      .hero-mark { width: 68px; height: 68px; }
+      .shot-card figcaption { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
     }
   </style>
 </head>
@@ -529,7 +635,7 @@
   <header class="topbar" id="topbar">
     <div class="topbar-inner">
       <a class="brand" href="#top">
-        <img src="assets/icon-256.png" width="28" height="28" alt="" />
+        <img src="assets/icon-256.png" width="30" height="30" alt="" />
         SupTools
       </a>
       <nav class="nav" aria-label="主导航">
@@ -543,10 +649,10 @@
   </header>
 
   <section class="hero" id="top">
-    <div class="hero-grid">
+    <div class="hero-inner">
       <div class="hero-copy">
         <p class="eyebrow"><i></i>macOS Utility</p>
-        <img class="hero-mark" src="assets/icon.png" width="72" height="72" alt="SupTools" />
+        <img class="hero-mark" src="assets/icon.png" width="78" height="78" alt="SupTools" />
         <h1>SupTools<span>超级工具箱</span></h1>
         <p class="lede">为 Mac 日常维护设计的系统工具：监控、清理、卸载、启动项与截图录屏，集中在一个窗口。</p>
         <div class="cta">
@@ -560,13 +666,13 @@
         </div>
         <p class="meta-row">v1.28.0 · DMG · macOS 13+ · <a href="#download">全部安装选项</a></p>
       </div>
-      <div class="hero-visual">
+      <div class="hero-visual" aria-hidden="true">
         <figure class="shot-frame">
           <img
             src="assets/shot-overview-web.jpg"
             width="2640"
             height="1880"
-            alt="SupTools 总览界面"
+            alt=""
           />
         </figure>
       </div>
@@ -579,12 +685,12 @@
       <h2 class="title">核心能力</h2>
       <p class="lead">侧栏只保留真正会用到的功能，打开即可操作。</p>
       <div class="feature-list">
-        <article class="feature"><div class="n">01</div><h3>总览</h3><p>CPU、内存、网络、磁盘，以及占用最高的进程，便于快速判断机器状态。</p></article>
-        <article class="feature"><div class="n">02</div><h3>清理</h3><p>扫描缓存、浏览器、开发文件与废纸篓，勾选后清理，减少磁盘占用。</p></article>
-        <article class="feature"><div class="n">03</div><h3>卸载</h3><p>删除应用本体，并尽量查找偏好设置、缓存等关联残留。</p></article>
-        <article class="feature"><div class="n">04</div><h3>启动项</h3><p>管理登录项与 LaunchAgent，关闭不需要的开机自启。</p></article>
-        <article class="feature"><div class="n">05</div><h3>截图 / 录屏</h3><p>框选、窗口、全屏；支持标记编辑与全局快捷键。</p></article>
-        <article class="feature"><div class="n">06</div><h3>权限</h3><p>集中检查屏幕录制、辅助功能等系统隐私权限，按指引开启。</p></article>
+        <article class="feature"><div class="n">01</div><div><h3>总览</h3><p>CPU、内存、网络、磁盘，以及占用最高的进程，便于快速判断机器状态。</p></div></article>
+        <article class="feature"><div class="n">02</div><div><h3>清理</h3><p>扫描缓存、浏览器、开发文件与废纸篓，勾选后清理，减少磁盘占用。</p></div></article>
+        <article class="feature"><div class="n">03</div><div><h3>卸载</h3><p>删除应用本体，并尽量查找偏好设置、缓存等关联残留。</p></div></article>
+        <article class="feature"><div class="n">04</div><div><h3>启动项</h3><p>管理登录项与 LaunchAgent，关闭不需要的开机自启。</p></div></article>
+        <article class="feature"><div class="n">05</div><div><h3>截图 / 录屏</h3><p>框选、窗口、全屏；支持标记编辑与全局快捷键。</p></div></article>
+        <article class="feature"><div class="n">06</div><div><h3>权限</h3><p>集中检查屏幕录制、辅助功能等系统隐私权限，按指引开启。</p></div></article>
       </div>
     </div>
   </section>
@@ -593,17 +699,20 @@
     <div class="shell">
       <p class="kicker">Interface</p>
       <h2 class="title">产品界面</h2>
-      <p class="lead">真实运行截图，保持原始比例，不做拉伸裁切。</p>
+      <p class="lead">真实运行截图，保持原始比例。</p>
       <div class="gallery">
-        <figure class="shot-frame">
+        <figure class="shot-card">
           <img src="assets/shot-overview-web.jpg" width="2640" height="1880" alt="SupTools 总览界面" loading="lazy" />
+          <figcaption>总览</figcaption>
         </figure>
         <div class="stack">
-          <figure class="shot-frame">
+          <figure class="shot-card">
             <img src="assets/shot-clean-web.jpg" width="2640" height="1880" alt="清理" loading="lazy" />
+            <figcaption>清理</figcaption>
           </figure>
-          <figure class="shot-frame">
+          <figure class="shot-card">
             <img src="assets/shot-startup-web.jpg" width="2640" height="1880" alt="启动项" loading="lazy" />
+            <figcaption>启动项</figcaption>
           </figure>
         </div>
       </div>
@@ -675,7 +784,10 @@
 
   <footer>
     <div class="shell">
-      <div class="f-brand">SupTools</div>
+      <div class="f-brand">
+        <img src="assets/icon-256.png" width="28" height="28" alt="" />
+        SupTools
+      </div>
       <p><a href="https://github.com/linux503/suptools">github.com/linux503/suptools</a> · MIT License</p>
     </div>
   </footer>
