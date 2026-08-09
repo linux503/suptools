@@ -203,6 +203,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
     --ring-a: 0.50;
   }
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
   html, body {
     margin: 0; height: 100%;
     background: transparent;
@@ -1845,13 +1846,15 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
       <section class="page active" id="page-overview">
         <div class="head"><h2 id="ov-header">加载中…</h2><p id="ov-sub">正在连接本机采集器…</p></div>
         <div class="alerts" id="ov-alerts"></div>
-        <div class="info-grid" hidden aria-hidden="true">
-          <div class="info-pill"><div class="k">芯片</div><div class="v" id="ov-chip">—</div></div>
-          <div class="info-pill"><div class="k">核心</div><div class="v" id="ov-cores">—</div></div>
-          <div class="info-pill"><div class="k">负载 1 / 5 / 15</div><div class="v" id="ov-load">—</div></div>
-          <div class="info-pill"><div class="k">已运行</div><div class="v" id="ov-uptime">—</div></div>
-          <div class="info-pill"><div class="k">内存压力</div><div class="v"><span class="pressure-pill" id="ov-pressure">—</span></div></div>
-          <div class="info-pill" id="ov-batt-pill"><div class="k">电池</div><div class="v" id="ov-battery">—</div></div>
+        <div id="ov-stubs" style="position:absolute;width:0;height:0;overflow:hidden;opacity:0;pointer-events:none" aria-hidden="true">
+          <span id="ov-chip"></span><span id="ov-cores"></span><span id="ov-load"></span><span id="ov-uptime"></span>
+          <span class="pressure-pill" id="ov-pressure"></span><span id="ov-battery"></span><span id="ov-batt-pill"></span>
+          <span id="ov-cpu-pct"></span><div id="ov-cpu-ring"></div><div id="ov-cpu-kv"></div><canvas id="ov-cpu-spark"></canvas>
+          <span id="ov-mem-pct"></span><span id="ov-mem-used"></span><div id="ov-mem-ring"></div><div id="ov-mem-kv"></div>
+          <div id="ov-mem-stack"></div><div id="ov-mem-legend"></div><canvas id="ov-mem-spark"></canvas>
+          <span id="ov-net-down"></span><span id="ov-net-up"></span><span id="ov-net-iface"></span><canvas id="ov-net-spark"></canvas>
+          <span id="ov-disk-name"></span><span id="ov-disk-pct-label"></span><span id="ov-disk-bar"></span>
+          <span id="ov-disk-text"></span><span id="ov-disk-read"></span><span id="ov-disk-write"></span>
         </div>
         <div class="kpi-grid" id="ov-quick">
           <div class="kpi" style="--c:var(--cpu)"><div class="label"><i></i>CPU</div><div class="value" id="q-cpu">—</div><div class="sub" id="q-cpu-s"></div></div>
@@ -1861,53 +1864,6 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
         </div>
         <div class="section-gap">进程</div>
         <div class="grid">
-          <div class="card h-metric" hidden aria-hidden="true" style="--c:var(--cpu)">
-            <h3><i></i>CPU</h3>
-            <div class="card-body">
-              <div class="metric-row">
-                <div class="ring" id="ov-cpu-ring" style="--c:var(--cpu)"><div><b id="ov-cpu-pct">—</b><small>总占用</small></div></div>
-                <div class="grow kv-list" id="ov-cpu-kv"></div>
-              </div>
-              <canvas class="spark" id="ov-cpu-spark"></canvas>
-            </div>
-          </div>
-          <div class="card h-metric" hidden aria-hidden="true" style="--c:var(--mem)">
-            <h3><i></i>内存</h3>
-            <div class="card-body">
-              <div class="metric-row">
-                <div class="ring" id="ov-mem-ring" style="--c:var(--mem)"><div><b id="ov-mem-pct">—</b><small id="ov-mem-used">—</small></div></div>
-                <div class="grow">
-                  <div class="kv-list" id="ov-mem-kv"></div>
-                  <div class="stack" id="ov-mem-stack"></div>
-                  <div class="muted" id="ov-mem-legend"></div>
-                </div>
-              </div>
-              <canvas class="spark" id="ov-mem-spark"></canvas>
-            </div>
-          </div>
-          <div class="card h-metric" hidden aria-hidden="true" style="--c:var(--down)">
-            <h3><i></i>网络</h3>
-            <div class="card-body">
-              <div class="rate-row">
-                <div class="rate-box"><div class="rk">下行</div><div class="rv down" id="ov-net-down">—</div></div>
-                <div class="rate-box"><div class="rk">上行</div><div class="rv up" id="ov-net-up">—</div></div>
-              </div>
-              <div class="muted" id="ov-net-iface" style="margin-bottom:6px"></div>
-              <canvas class="spark" id="ov-net-spark"></canvas>
-            </div>
-          </div>
-          <div class="card h-metric" hidden aria-hidden="true" style="--c:var(--disk)">
-            <h3><i></i>硬盘</h3>
-            <div class="card-body">
-              <div class="kv-row" style="border:0;padding-top:0"><span class="k" id="ov-disk-name">—</span><span class="v" id="ov-disk-pct-label">—</span></div>
-              <div class="bar" style="--c:var(--disk)"><span id="ov-disk-bar"></span></div>
-              <div class="muted" id="ov-disk-text" style="font-family:ui-monospace,Menlo,monospace;margin-bottom:8px">—</div>
-              <div class="rate-row">
-                <div class="rate-box"><div class="rk">读取</div><div class="rv" id="ov-disk-read" style="color:var(--disk)">—</div></div>
-                <div class="rate-box"><div class="rk">写入</div><div class="rv" id="ov-disk-write" style="color:var(--warn)">—</div></div>
-              </div>
-            </div>
-          </div>
           <div class="card h-table">
             <div class="card-head">
               <h3><i style="background:var(--cpu)"></i>CPU 最高</h3>
