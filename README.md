@@ -5,7 +5,7 @@ macOS 一站式系统工具：监控、清理、卸载、启动项、截图录�
 [![macOS](https://img.shields.io/badge/macOS-13%2B-black)](#)
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](#)
 
-**产品页：** 打开仓库的 [GitHub Pages](./docs/index.html)（推送后启用 Pages 即可在线访问）。
+**产品页：** https://linux503.github.io/suptools/
 
 ## 功能
 
