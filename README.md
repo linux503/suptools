@@ -31,6 +31,18 @@
 
 ---
 
+<p align="center">
+  <img src="docs/assets/shot-overview-web.jpg" width="920" alt="SupTools 总览界面" />
+</p>
+
+<p align="center">
+  <img src="docs/assets/shot-clean-web.jpg" width="440" alt="清理" />
+  &nbsp;
+  <img src="docs/assets/shot-startup-web.jpg" width="440" alt="启动项" />
+</p>
+
+---
+
 ## 为什么是 SupTools
 
 原生 macOS 应用（Python + PyObjC / WKWebView），不是 Electron。  

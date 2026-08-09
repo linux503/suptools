@@ -7,7 +7,7 @@
   <meta name="description" content="SupTools — macOS 超级工具箱：系统监控、智能清理、软件卸载、启动项、截图录屏与权限引导。" />
   <meta property="og:title" content="SupTools · 超级工具箱" />
   <meta property="og:description" content="为 Mac 打造的一站式系统工具箱。" />
-  <meta property="og:image" content="assets/icon.png" />
+  <meta property="og:image" content="assets/shot-overview-web.jpg" />
   <link rel="icon" href="assets/icon-256.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -232,6 +232,51 @@
       font-size: 17px;
     }
 
+    /* ——— Screenshots ——— */
+    .shot-hero {
+      margin: 0 0 28px;
+      border-radius: 22px;
+      overflow: hidden;
+      background: #0a121f;
+      box-shadow: 0 28px 70px rgba(6, 16, 28, 0.16);
+    }
+    .shot-hero img { width: 100%; height: auto; }
+    .shot-hero figcaption,
+    .shot-grid figcaption {
+      margin: 0;
+      padding: 12px 16px 14px;
+      font-size: 13px;
+      font-weight: 650;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+      background: rgba(255,255,255,0.72);
+      border-top: 1px solid var(--line);
+    }
+    .shot-hero figcaption {
+      background: rgba(10, 18, 31, 0.92);
+      color: rgba(255,255,255,0.72);
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .shot-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+    .shot-grid figure {
+      margin: 0;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 14px 40px rgba(6, 16, 28, 0.08);
+      border: 1px solid var(--line);
+      transition: transform .35s ease, box-shadow .35s ease;
+    }
+    .shot-grid figure:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 22px 50px rgba(6, 16, 28, 0.12);
+    }
+    .shot-grid img { width: 100%; height: auto; }
+
     .feature-list { border-top: 1px solid var(--line); }
     .feature {
       display: grid;
@@ -393,6 +438,8 @@
       .feature { grid-template-columns: 56px 1fr; gap: 6px 14px; padding: 24px 0; }
       section { padding: 72px 0; }
       .band { padding: 56px 0; }
+      .shot-grid { grid-template-columns: 1fr; gap: 14px; }
+      .shot-hero { border-radius: 16px; }
     }
   </style>
 </head>
@@ -408,6 +455,7 @@
           SupTools
         </a>
         <div class="nav-links">
+          <a href="#preview">界面</a>
           <a href="#features">功能</a>
           <a href="#guide">上手</a>
           <a href="#install">安装</a>
@@ -421,11 +469,41 @@
         <p class="lede">为 Mac 打造的一站式系统工具：监控、清理、卸载、启动项、截图录屏，开箱即用。</p>
         <div class="cta-row">
           <a class="btn btn-primary" href="#install">开始安装</a>
-          <a class="btn btn-ghost" href="#guide">查看引导</a>
+          <a class="btn btn-ghost" href="#preview">查看界面</a>
         </div>
       </div>
     </div>
   </header>
+
+  <section id="preview">
+    <div class="wrap reveal">
+      <p class="kicker">Preview</p>
+      <h2 class="title">真实产品界面</h2>
+      <p class="lead">总览监控、清理、卸载、启动项与权限引导——打开就能用的样子。</p>
+      <figure class="shot-hero">
+        <img src="assets/shot-overview-web.jpg" width="1360" height="980" alt="SupTools 总览：CPU、内存、网络与磁盘指标" loading="eager" />
+        <figcaption>总览 · 实时系统指标</figcaption>
+      </figure>
+      <div class="shot-grid">
+        <figure>
+          <img src="assets/shot-clean-web.jpg" width="1360" height="980" alt="SupTools 清理：可回收空间与分类列表" loading="lazy" />
+          <figcaption>清理</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/shot-uninstall-web.jpg" width="1360" height="980" alt="SupTools 卸载：已安装应用列表" loading="lazy" />
+          <figcaption>卸载</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/shot-startup-web.jpg" width="1360" height="980" alt="SupTools 启动项：登录项与 LaunchAgent" loading="lazy" />
+          <figcaption>启动项</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/shot-perms-web.jpg" width="1360" height="980" alt="SupTools 权限：系统隐私权限状态" loading="lazy" />
+          <figcaption>权限</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
 
   <section id="features">
     <div class="wrap reveal">
