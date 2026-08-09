@@ -54,6 +54,21 @@
 
 ## 快速安装
 
+### 下载安装包（推荐）
+
+前往最新 Release 下载对应芯片的 DMG：
+
+**https://github.com/linux503/suptools/releases/latest**
+
+| 芯片 | 文件 |
+|:---|:---|
+| Apple Silicon（M1/M2/M3/M4） | `SupTools-*-AppleSilicon.dmg` |
+| Intel | `SupTools-*-Intel.dmg` |
+
+打开 DMG → 把 **SupTools** 拖到「应用程序」→ 打开应用 → **工具 → 权限** 开通推荐权限。
+
+### 从源码安装
+
 ```bash
 git clone https://github.com/linux503/suptools.git
 cd suptools
@@ -61,11 +76,7 @@ python3 -m pip install -r requirements.txt
 ./Scripts/install-to-applications.sh
 ```
 
-安装完成后：
-
-1. 打开 `/Applications/SupTools.app`
-2. 进入 **工具 → 权限**
-3. 开通推荐权限后再使用清理 / 截图 / 录屏等功能
+安装完成后打开 `/Applications/SupTools.app`，进入 **工具 → 权限** 开通推荐权限。
 
 ---
 
