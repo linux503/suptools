@@ -47,12 +47,13 @@
 
 ## 安装
 
-前往最新 Release 下载对应芯片的 DMG：
+前往最新 Release 下载安装包（推荐 Universal 综合版）：
 
 **https://github.com/linux503/suptools/releases/latest**
 
-| 芯片 | 文件 |
+| 包 | 文件 |
 |:---|:---|
+| **Universal（推荐）** | `SupTools-*-Universal.dmg` — 同时支持 M 系列与 Intel |
 | Apple Silicon | `SupTools-*-AppleSilicon.dmg` |
 | Intel | `SupTools-*-Intel.dmg` |
 

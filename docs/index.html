@@ -27,7 +27,7 @@
       --emerald-soft: rgba(15, 143, 127, 0.12);
       --gold: #d4a24c;
       --white: #ffffff;
-      --ver: 1.27.0;
+      --ver: 1.28.0;
     }
 
     * { box-sizing: border-box; }
@@ -557,18 +557,16 @@
         <p class="lede">为 Mac 日常维护设计的系统工具：监控、清理、卸载、启动项与截图录屏，集中在一个窗口。</p>
         <div class="cta">
           <a class="btn btn-primary" id="dl-primary"
-             href="https://github.com/linux503/suptools/releases/download/v1.27.0/SupTools-1.27.0-AppleSilicon.dmg"
+             href="https://github.com/linux503/suptools/releases/download/v1.28.0/SupTools-1.28.0-Universal.dmg"
              download>
             下载 macOS 安装包
-            <small id="dl-primary-chip">Apple Silicon</small>
+            <small id="dl-primary-chip">Universal · M / Intel</small>
           </a>
-          <a class="btn btn-ghost" id="dl-alt"
-             href="https://github.com/linux503/suptools/releases/download/v1.27.0/SupTools-1.27.0-Intel.dmg"
-             download>
-            Intel 版本
+          <a class="btn btn-ghost" href="#download">
+            按芯片选择
           </a>
         </div>
-        <p class="meta-row">v1.27.0 · DMG · macOS 13+ · <a href="#download">全部安装选项</a></p>
+        <p class="meta-row">v1.28.0 · DMG · macOS 13+ · <a href="#download">全部安装选项</a></p>
       </div>
       <div class="hero-visual" aria-hidden="true">
         <img src="assets/shot-overview-web.jpg" width="1360" height="980" alt="" />
@@ -617,16 +615,29 @@
     <div class="shell">
       <p class="kicker">Download</p>
       <h2 class="title">下载安装包</h2>
-      <p class="lead">按芯片选择 DMG，拖入「应用程序」即可使用。</p>
+      <p class="lead">推荐 Universal 综合包（同时支持 M 系列与 Intel）；也可按芯片下载专用包。</p>
 
       <div class="dl-grid">
-        <a class="dl preferred" id="dl-as"
-           href="https://github.com/linux503/suptools/releases/download/v1.27.0/SupTools-1.27.0-AppleSilicon.dmg"
+        <a class="dl preferred" id="dl-uni"
+           href="https://github.com/linux503/suptools/releases/download/v1.28.0/SupTools-1.28.0-Universal.dmg"
+           download style="grid-column: 1 / -1">
+          <div>
+            <div class="chip">Recommended · Universal</div>
+            <strong>综合版 · M 系列 + Intel</strong>
+            <div class="sub">一份安装包同时支持 Apple Silicon 与 Intel · 约 1.9 MB · v1.28.0</div>
+          </div>
+          <div class="action">
+            立即下载
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 4v12"/><path d="M7 11l5 5 5-5"/><path d="M5 20h14"/></svg>
+          </div>
+        </a>
+        <a class="dl" id="dl-as"
+           href="https://github.com/linux503/suptools/releases/download/v1.28.0/SupTools-1.28.0-AppleSilicon.dmg"
            download>
           <div>
-            <div class="chip">Recommended · M series</div>
-            <strong>Apple Silicon</strong>
-            <div class="sub">M1 / M2 / M3 / M4 · 约 2.1 MB · v1.27.0</div>
+            <div class="chip">Apple Silicon</div>
+            <strong>仅 M 系列</strong>
+            <div class="sub">M1 / M2 / M3 / M4 · 约 1.9 MB · v1.28.0</div>
           </div>
           <div class="action">
             立即下载
@@ -634,12 +645,12 @@
           </div>
         </a>
         <a class="dl" id="dl-intel"
-           href="https://github.com/linux503/suptools/releases/download/v1.27.0/SupTools-1.27.0-Intel.dmg"
+           href="https://github.com/linux503/suptools/releases/download/v1.28.0/SupTools-1.28.0-Intel.dmg"
            download>
           <div>
             <div class="chip">Intel</div>
-            <strong>Intel Mac</strong>
-            <div class="sub">x86_64 · 约 2.2 MB · v1.27.0</div>
+            <strong>仅 Intel Mac</strong>
+            <div class="sub">x86_64 · 约 2.0 MB · v1.28.0</div>
           </div>
           <div class="action">
             立即下载
@@ -649,14 +660,14 @@
       </div>
 
       <div class="steps-mini" aria-label="安装步骤">
-        <article><b>01 下载 DMG</b><span>选择对应芯片的安装包并打开。</span></article>
+        <article><b>01 下载 DMG</b><span>推荐 Universal；或按芯片选择专用包。</span></article>
         <article><b>02 拖到应用程序</b><span>将 SupTools 拖入「应用程序」文件夹。</span></article>
         <article><b>03 开启权限</b><span>打开后进入「权限」，按提示开启屏幕录制等。</span></article>
       </div>
 
       <p class="note" style="margin-top:22px">
         首次使用建议开启屏幕录制与辅助功能；清理 / 卸载建议再开完全磁盘访问。
-        <a href="https://github.com/linux503/suptools/releases/tag/v1.27.0">查看 Release 说明</a>
+        <a href="https://github.com/linux503/suptools/releases/tag/v1.28.0">查看 Release 说明</a>
         ·
         <a href="https://github.com/linux503/suptools">源码仓库</a>
       </p>
@@ -672,42 +683,7 @@
 
   <script>
     (function () {
-      var AS = "https://github.com/linux503/suptools/releases/download/v1.27.0/SupTools-1.27.0-AppleSilicon.dmg";
-      var INTEL = "https://github.com/linux503/suptools/releases/download/v1.27.0/SupTools-1.27.0-Intel.dmg";
-      var primary = document.getElementById("dl-primary");
-      var alt = document.getElementById("dl-alt");
-      var chip = document.getElementById("dl-primary-chip");
-      var asCard = document.getElementById("dl-as");
-      var intelCard = document.getElementById("dl-intel");
       var topbar = document.getElementById("topbar");
-
-      function detectAppleSilicon() {
-        try {
-          var canvas = document.createElement("canvas");
-          var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-          if (gl) {
-            var info = gl.getExtension("WEBGL_debug_renderer_info");
-            if (info) {
-              var renderer = String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL) || "");
-              if (/Apple/i.test(renderer)) return true;
-              if (/Intel|AMD|NVIDIA/i.test(renderer)) return false;
-            }
-          }
-        } catch (e) {}
-        var ua = navigator.userAgent || "";
-        if (/Intel Mac OS X/i.test(ua)) return false;
-        return true;
-      }
-
-      if (!detectAppleSilicon()) {
-        primary.href = INTEL;
-        chip.textContent = "Intel";
-        alt.href = AS;
-        alt.textContent = "Apple Silicon 版本";
-        asCard.classList.remove("preferred");
-        intelCard.classList.add("preferred");
-      }
-
       function onScroll() {
         if (!topbar) return;
         topbar.classList.toggle("on", window.scrollY > 8);
