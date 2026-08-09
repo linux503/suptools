@@ -416,6 +416,32 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
     position: relative;
     z-index: 310;
   }
+  .toolbar .metric-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  body[data-page="clean"] .toolbar .metric-controls,
+  body[data-page="uninstall"] .toolbar .metric-controls,
+  body[data-page="startup"] .toolbar .metric-controls,
+  body[data-page="shot"] .toolbar .metric-controls,
+  body[data-page="rec"] .toolbar .metric-controls,
+  body[data-page="perms"] .toolbar .metric-controls,
+  body[data-page="settings"] .toolbar .metric-controls {
+    display: none;
+  }
+  .nav button:focus-visible,
+  .toolbar button:focus-visible,
+  .btn-primary:focus-visible,
+  .btn-ghost:focus-visible,
+  .btn-mini:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--tint) 70%, white);
+    outline-offset: 2px;
+  }
+  .nav button.active:hover {
+    background: var(--nav-active);
+    color: #fff;
+  }
   .toolbar button, .toolbar select {
     appearance: none;
     border: 0;
@@ -870,7 +896,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
     background: var(--grouped); border: 0.5px solid var(--sep);
   }
   .un-progress.show { display: block; }
-  .un-progress.indeterminate .bar i { width: 35% !important; animation: cleanPulse 1.1s ease-in-out infinite; }
+  .un-progress.indeterminate .bar i { width: 35% !important; animation: clean-indeterminate 1.1s ease-in-out infinite; }
   .un-progress .row { display: flex; justify-content: space-between; gap: 10px; align-items: center; }
   .un-progress .label { font: 650 12px/1 -apple-system, sans-serif; }
   .un-progress .pct { color: var(--text2); font-size: 12px; }
@@ -931,7 +957,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
     background: var(--grouped); border: 0.5px solid var(--sep);
   }
   .su-progress.show { display: block; }
-  .su-progress.indeterminate .bar i { width: 35% !important; animation: cleanPulse 1.1s ease-in-out infinite; }
+  .su-progress.indeterminate .bar i { width: 35% !important; animation: clean-indeterminate 1.1s ease-in-out infinite; }
   .su-progress .row { display: flex; justify-content: space-between; gap: 10px; align-items: center; }
   .su-progress .label { font: 650 12px/1 -apple-system, sans-serif; }
   .su-progress .pct { color: var(--text2); font-size: 12px; }
@@ -943,7 +969,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
     background: color-mix(in srgb, #30d158 12%, var(--grouped));
     border: 0.5px solid color-mix(in srgb, #30d158 30%, var(--sep));
   }
-  .su-toast.show { display: block; }
+  .su-toast.show { display: block; animation: toast-in .22s ease; }
   .su-toast.warn {
     background: color-mix(in srgb, #ff9f0a 14%, var(--grouped));
     border-color: color-mix(in srgb, #ff9f0a 30%, var(--sep));
@@ -992,13 +1018,46 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
     background: color-mix(in srgb, #30d158 12%, var(--grouped));
     border: 0.5px solid color-mix(in srgb, #30d158 30%, var(--sep));
   }
-  .perm-toast.show { display: block; }
+  .perm-toast.show { display: block; animation: toast-in .22s ease; }
   .perm-toast.warn {
     background: color-mix(in srgb, #ff9f0a 14%, var(--grouped));
     border-color: color-mix(in srgb, #ff9f0a 30%, var(--sep));
   }
   .perm-toast .t { font: 700 14px/1.2 -apple-system, sans-serif; }
   .perm-toast .s { margin-top: 4px; color: var(--text2); font-size: 12px; }
+  @keyframes toast-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: none; }
+  }
+  .kpi .v.flash { animation: kpi-flash .45s ease; }
+  @keyframes kpi-flash {
+    from { opacity: 0.45; transform: translateY(2px); }
+    to { opacity: 1; transform: none; }
+  }
+  .app-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 28px;
+    transform: translateX(-50%) translateY(8px);
+    z-index: 12050;
+    min-width: 160px;
+    max-width: min(420px, calc(100% - 32px));
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: rgba(28, 28, 30, 0.92);
+    color: #f5f5f7;
+    font: 650 13px/1.35 -apple-system, sans-serif;
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.28);
+    transition: opacity .18s ease, transform .18s ease;
+  }
+  .app-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .app-toast.warn { background: rgba(180, 83, 9, 0.94); }
   .perm-list {
     border-radius: 16px; background: var(--grouped); border: 0.5px solid var(--sep);
     box-shadow: var(--shadow); overflow: hidden;
@@ -1848,15 +1907,17 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
           <svg class="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 14.5A8.5 8.5 0 1 1 9.5 3 7 7 0 0 0 21 14.5z"/></svg>
           <svg class="ico-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v18"/><path d="M12 3a9 9 0 0 1 0 18"/></svg>
         </button>
-        <span>刷新</span>
-        <select id="interval">
-          <option value="500">0.5s</option>
-          <option value="1000" selected>1s</option>
-          <option value="2000">2s</option>
-          <option value="3000">3s</option>
-          <option value="5000">5s</option>
-        </select>
-        <button id="pauseBtn">暂停</button>
+        <div class="metric-controls">
+          <span>刷新</span>
+          <select id="interval">
+            <option value="500">0.5s</option>
+            <option value="1000" selected>1s</option>
+            <option value="2000">2s</option>
+            <option value="3000">3s</option>
+            <option value="5000">5s</option>
+          </select>
+          <button id="pauseBtn">暂停</button>
+        </div>
       </div>
     </div>
     <div class="hero" id="hero"></div>
@@ -2798,6 +2859,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
   </div>
 </div>
 <div class="shot-toast" id="shot-toast"></div>
+<div class="app-toast" id="app-toast" role="status" aria-live="polite"></div>
 <div class="modal-backdrop" id="clean-modal">
   <div class="modal">
     <h3 id="clean-modal-title">确认清理</h3>
@@ -3008,10 +3070,15 @@ function showPage(target) {
   page = next;
   document.body.setAttribute('data-page', next);
   document.querySelectorAll('.nav button[data-page]').forEach(b => {
-    b.classList.toggle('active', b.getAttribute('data-page') === next);
+    const on = b.getAttribute('data-page') === next;
+    b.classList.toggle('active', on);
+    if (on) b.setAttribute('aria-current', 'page');
+    else b.removeAttribute('aria-current');
   });
   document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-'+next));
   if ($('title')) $('title').textContent = TITLES[next] || next;
+  const content = document.querySelector('.content');
+  if (content) content.scrollTop = 0;
   if (next === 'clean') {
     post({type:'clean_history'});
     if (!cleanItems.length && !cleanBusy) showCleanWelcome();
@@ -3166,6 +3233,27 @@ try {
 function saveSettings(patch){
   if (settingsApplying) return;
   post({type:'settings_set', values: patch || {}});
+  showAppToast('已保存');
+}
+let appToastTimer = null;
+function showAppToast(msg, opts){
+  const el = $('app-toast');
+  if (!el) return;
+  opts = opts || {};
+  el.textContent = msg || '';
+  el.classList.toggle('warn', !!opts.warn);
+  el.classList.add('show');
+  if (appToastTimer) clearTimeout(appToastTimer);
+  appToastTimer = setTimeout(function(){ el.classList.remove('show'); }, opts.ms || 1600);
+}
+function flashText(el, text){
+  if (!el) return;
+  const next = String(text == null ? '' : text);
+  if (el.textContent === next) return;
+  el.textContent = next;
+  el.classList.remove('flash');
+  void el.offsetWidth;
+  el.classList.add('flash');
 }
 function bindSettingsUI(){
   const themeSeg = $('set-theme');
@@ -3430,7 +3518,7 @@ window.__setProcBatchResult = function(payload) {
     const ok = data.ok_count || 0;
     const fail = data.fail_count || 0;
     const action = data.action === 'kill' ? '强制结束' : '结束';
-    $('status').textContent = action + '完成 · 成功 ' + ok + (fail ? (' · 失败 ' + fail) : '');
+    showAppToast(action + '完成 · 成功 ' + ok + (fail ? (' · 失败 ' + fail) : ''), fail ? {warn: true, ms: 2600} : {ms: 2000});
     (data.ok_pids || []).forEach(pid => delete selectedPids[pid]);
     updateProcStopUI();
     if (state) {
@@ -3440,20 +3528,9 @@ window.__setProcBatchResult = function(payload) {
 };
 
 function renderHero(s) {
+  // Hero tiles are intentionally unused in the simplified UI.
   const hero = $('hero');
-  if (!hero) return;
-  const tiles = [
-    {k:'CPU', v:pct(s.cpu_percent,0), s:`用户 ${pct(s.cpu_user,0)} · 系统 ${pct(s.cpu_system,0)}`, c:'var(--cpu)'},
-    {k:'内存', v:pct(s.mem_percent,0), s:`${esc(s.mem_used)} / ${esc(s.mem_total)}`, c:'var(--mem)'},
-    {k:'网络', v:'↓ '+esc(s.net_down_m), s:'↑ '+esc(s.net_up_m), c:'var(--down)'},
-    {k:'磁盘', v:pct(s.disk_percent,0), s:`${esc(s.disk_used)} / ${esc(s.disk_total)}`, c:'var(--disk)'},
-  ];
-  hero.innerHTML = tiles.map(t => `
-    <div class="tile" style="--c:${t.c}">
-      <div class="k"><span class="dot"></span>${t.k}</div>
-      <div class="v">${t.v}</div>
-      <div class="s">${t.s}</div>
-    </div>`).join('');
+  if (hero && hero.innerHTML) hero.innerHTML = '';
 }
 
 function renderProcesses(s) {
@@ -3496,7 +3573,7 @@ function renderProcMini(el, items, memFirst) {
   if (!el) return;
   const rows = (items||[]).slice(0,8);
   if (!rows.length) {
-    el.innerHTML = '<tr><td colspan="6" class="muted">暂无进程数据</td></tr>';
+    el.innerHTML = '<tr><td colspan="6"><div class="su-empty" style="padding:28px 12px"><div class="big">暂无进程数据</div>采集器连接后将显示占用最高的进程</div></td></tr>';
     updateProcStopUI();
     return;
   }
@@ -3765,36 +3842,35 @@ window.__setCleanResult = function(payload) {
   try {
     const data = typeof payload === 'string' ? JSON.parse(payload) : payload;
     const panel = $('clean-progress');
-    if (panel) {
-      panel.classList.add('show');
-      panel.classList.remove('indeterminate');
-      $('clean-prog-label').textContent = data.cancelled ? '清理已取消' : (data.will_rescan ? '清理完成 · 刷新中' : '清理完成');
-      $('clean-prog-pct').textContent = '100%';
-      $('clean-prog-bar').style.width = '100%';
-      $('clean-prog-current').textContent = (data.action_label || (data.moved_to_trash ? '已移至废纸篓' : '已释放')) + ' · ' + (data.freed_text || '0 B');
-      $('clean-prog-found').textContent = '已处理 ' + (data.removed_items || 0) + ' 项';
-      $('clean-prog-bytes').textContent = data.freed_text || '0 B';
-    }
     const ok = $('clean-success');
-    ok.classList.add('show');
-    $('clean-success-t').textContent = data.cancelled ? '已取消 · 部分完成' : (data.emptied_trash ? '废纸篓已清空' : '清理完成');
-    const mode = data.action_label || (data.moved_to_trash ? '已移至废纸篓（清空后才真正释放磁盘）' : '已永久删除并释放空间');
-    $('clean-success-s').textContent = (data.freed_text || '0 B') + ' · ' + (data.removed_items || 0) + ' 项 · ' + mode
-      + ((data.errors && data.errors.length) ? (' · ' + data.errors.length + ' 个错误') : '');
-    if (data.errors && data.errors.length) {
-      $('status').textContent = '清理错误: ' + data.errors[0];
-    } else if ((data.removed_items || 0) === 0 && (data.requested || 0) > 0) {
-      $('status').textContent = '未能删除所选项目（可能被占用或权限不足）';
-    } else if ((data.requested || 0) === 0 && (data.errors && data.errors.length)) {
-      $('status').textContent = data.errors[0];
-    }
     if (data.will_rescan && !data.cancelled) {
+      if (panel) {
+        panel.classList.add('show');
+        panel.classList.add('indeterminate');
+        $('clean-prog-label').textContent = '正在刷新扫描结果…';
+        $('clean-prog-pct').textContent = '…';
+        $('clean-prog-bar').style.width = '28%';
+      }
+      if (ok) ok.classList.remove('show');
       cleanBusy = true;
       setCleanBusyUI(true);
-      if ($('clean-prog-label')) $('clean-prog-label').textContent = '正在刷新扫描结果…';
     } else {
+      if (panel) panel.classList.remove('show');
+      if (ok) {
+        ok.classList.add('show');
+        $('clean-success-t').textContent = data.cancelled ? '已取消 · 部分完成' : (data.emptied_trash ? '废纸篓已清空' : '清理完成');
+        const mode = data.action_label || (data.moved_to_trash ? '已移至废纸篓（清空后才真正释放磁盘）' : '已永久删除并释放空间');
+        $('clean-success-s').textContent = (data.freed_text || '0 B') + ' · ' + (data.removed_items || 0) + ' 项 · ' + mode
+          + ((data.errors && data.errors.length) ? (' · ' + data.errors.length + ' 个错误') : '');
+      }
       cleanBusy = false;
       setCleanBusyUI(false);
+      if ((data.removed_items || 0) > 0) showAppToast((data.freed_text || '完成') + ' · 已处理 ' + (data.removed_items || 0) + ' 项');
+    }
+    if (data.errors && data.errors.length) {
+      showAppToast(data.errors[0], {warn: true, ms: 2800});
+    } else if ((data.removed_items || 0) === 0 && (data.requested || 0) > 0) {
+      showAppToast('未能删除所选项目（可能被占用或权限不足）', {warn: true, ms: 2800});
     }
   } catch (e) {
     cleanBusy = false;
@@ -4081,7 +4157,7 @@ function scanClean(){
     $('clean-prog-found').textContent = '已发现 0 项';
     $('clean-prog-bytes').textContent = '0 B';
   }
-  $('clean-list').innerHTML = '<div class="clean-empty"><div class="big">正在扫描磁盘</div>正在分析缓存、日志与开发者残留…</div>';
+  // Keep previous list / welcome visible; progress bar is the single busy surface.
   post({type:'clean_scan'});
 }
 
@@ -4746,6 +4822,7 @@ function renderStartupList() {
   }).join('');
 }
 
+let suToastTimer = null;
 function showSuToast(ok, title, msg) {
   const el = $('su-toast');
   if (!el) return;
@@ -4753,7 +4830,8 @@ function showSuToast(ok, title, msg) {
   el.classList.toggle('warn', !ok);
   $('su-toast-t').textContent = title || (ok ? '操作完成' : '操作失败');
   $('su-toast-s').textContent = msg || '';
-  setTimeout(function(){ el.classList.remove('show'); }, 3200);
+  if (suToastTimer) clearTimeout(suToastTimer);
+  suToastTimer = setTimeout(function(){ el.classList.remove('show'); }, 3200);
 }
 
 window.__setStartupProgress = function(payload) {
@@ -6094,6 +6172,10 @@ window.__setPermissionsStatus = function(payload) {
   try {
     const data = typeof payload === 'string' ? JSON.parse(payload) : payload;
     renderPermissions(data || {}, { announce: true });
+    if ($('perm-refresh')) {
+      $('perm-refresh').disabled = false;
+      $('perm-refresh').textContent = '重新检测';
+    }
   } catch (e) {}
 };
 
@@ -6101,12 +6183,10 @@ if ($('perm-refresh')) $('perm-refresh').onclick = () => {
   if ($('perm-refresh')) {
     $('perm-refresh').disabled = true;
     $('perm-refresh').textContent = '检测中…';
-    setTimeout(function(){
-      if ($('perm-refresh')) {
-        $('perm-refresh').disabled = false;
-        $('perm-refresh').textContent = '重新检测';
-      }
-    }, 1200);
+  }
+  const list = $('perm-list');
+  if (list && !(permStatus && permStatus.items && permStatus.items.length)) {
+    list.innerHTML = '<div class="su-empty"><div class="big">正在检测权限…</div>请稍候</div>';
   }
   post({type:'permissions_status'});
 };
