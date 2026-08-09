@@ -4,27 +4,24 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SupTools · 超级工具箱</title>
-  <meta name="description" content="SupTools — macOS 超级工具箱：系统监控、智能清理、软件卸载、启动项、截图录屏与权限引导。" />
+  <meta name="description" content="SupTools — macOS 超级工具箱：系统总览、清理、卸载、启动项、截图录屏。" />
   <meta property="og:title" content="SupTools · 超级工具箱" />
-  <meta property="og:description" content="为 Mac 打造的一站式系统工具箱。" />
+  <meta property="og:description" content="Mac 上常用的几个工具，收进一个窗口。" />
   <meta property="og:image" content="assets/shot-overview-web.jpg" />
   <link rel="icon" href="assets/icon-256.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,450;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,500&family=Instrument+Serif:ital@0;1&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,450;0,9..40,600;0,9..40,700;1,9..40,500&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
       --ink: #06101c;
       --foam: #f3faf8;
-      --cyan: #12c4b6;
       --cyan-deep: #0a7a92;
       --indigo: #15245f;
       --line: rgba(6, 16, 28, 0.10);
       --text: #101c2b;
       --muted: #5b6c7e;
-      --glow: rgba(18, 196, 182, 0.35);
     }
-
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
@@ -37,74 +34,42 @@
     }
     a { color: inherit; text-decoration: none; }
     img { max-width: 100%; display: block; }
-    code {
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 0.92em;
-      background: rgba(10, 122, 146, 0.08);
-      padding: 0.12em 0.4em;
-      border-radius: 6px;
-    }
 
-    /* ——— Hero ——— */
     .hero {
       position: relative;
-      min-height: 100svh;
       overflow: hidden;
       color: #fff;
       background:
-        radial-gradient(900px 520px at 12% 8%, rgba(70, 230, 220, 0.32), transparent 58%),
-        radial-gradient(760px 480px at 92% 10%, rgba(56, 130, 230, 0.26), transparent 52%),
-        radial-gradient(700px 500px at 70% 100%, rgba(10, 180, 160, 0.22), transparent 55%),
-        linear-gradient(158deg, #081336 0%, #0c4674 46%, #0cb3a4 100%);
-    }
-    .hero-noise {
-      position: absolute; inset: 0; pointer-events: none; opacity: 0.35;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
-      background-size: 64px 64px;
-      mask-image: radial-gradient(ellipse 80% 70% at 40% 35%, #000 10%, transparent 72%);
-    }
-    .hero-wave {
-      position: absolute;
-      left: -10%; right: -10%; bottom: -2%;
-      height: 28vh;
-      background:
-        radial-gradient(60% 120% at 50% 100%, rgba(255,255,255,0.14), transparent 70%);
-      animation: wavePulse 7s ease-in-out infinite;
-      pointer-events: none;
+        radial-gradient(800px 460px at 10% 0%, rgba(70, 230, 220, 0.28), transparent 55%),
+        radial-gradient(640px 400px at 95% 20%, rgba(56, 130, 230, 0.22), transparent 50%),
+        linear-gradient(158deg, #081336 0%, #0c4674 48%, #0cb3a4 100%);
     }
     .hero-inner {
-      position: relative; z-index: 1;
-      width: min(1120px, calc(100% - 48px));
+      position: relative;
+      width: min(920px, calc(100% - 40px));
       margin: 0 auto;
-      min-height: 100svh;
-      padding: 28px 0 64px;
-      display: grid;
-      grid-template-rows: auto 1fr;
+      padding: 24px 0 56px;
     }
     .nav {
-      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 48px;
     }
     .nav-brand {
-      display: flex; align-items: center; gap: 12px;
+      display: flex; align-items: center; gap: 10px;
       font-family: Syne, sans-serif;
-      font-weight: 700; font-size: 17px; letter-spacing: -0.02em;
+      font-weight: 700; font-size: 16px;
     }
     .nav-brand img {
-      width: 34px; height: 34px; border-radius: 9px;
-      box-shadow: 0 10px 28px rgba(0,0,0,0.28);
+      width: 32px; height: 32px; border-radius: 8px;
     }
-    .nav-links { display: flex; gap: 4px; align-items: center; }
+    .nav-links { display: flex; gap: 6px; align-items: center; }
     .nav-links a {
       padding: 8px 12px; border-radius: 999px;
       font-size: 13px; font-weight: 600;
       color: rgba(255,255,255,0.78);
-      transition: background .2s ease, color .2s ease;
     }
     .nav-links a:hover { background: rgba(255,255,255,0.12); color: #fff; }
     .nav-cta {
-      margin-left: 6px !important;
       background: rgba(255,255,255,0.12) !important;
       box-shadow: inset 0 0 0 1px rgba(255,255,255,0.28);
       color: #fff !important;
@@ -112,307 +77,160 @@
 
     .hero-stage {
       display: grid;
-      align-content: center;
-      justify-items: start;
-      gap: 22px;
-      padding: 56px 0 20px;
-      max-width: 740px;
+      gap: 16px;
+      max-width: 560px;
+      animation: rise .8s ease both;
     }
     .brand-mark {
-      width: min(132px, 26vw);
-      border-radius: 26px;
-      box-shadow:
-        0 28px 70px rgba(0, 18, 40, 0.48),
-        0 0 0 1px rgba(255,255,255,0.14);
-      animation: rise .85s cubic-bezier(.2,.8,.2,1) both;
+      width: 88px; height: 88px; border-radius: 22px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.28);
     }
     .brand-name {
       margin: 0;
       font-family: Syne, sans-serif;
       font-weight: 800;
-      font-size: clamp(52px, 10vw, 96px);
-      line-height: 0.92;
-      letter-spacing: -0.05em;
-      animation: rise .85s .06s cubic-bezier(.2,.8,.2,1) both;
+      font-size: clamp(40px, 8vw, 64px);
+      letter-spacing: -0.045em;
+      line-height: 0.95;
     }
     .brand-name em {
       display: block;
-      margin-top: 14px;
-      font-family: "Instrument Serif", Georgia, serif;
-      font-style: italic;
-      font-weight: 400;
-      font-size: 0.34em;
-      letter-spacing: 0.01em;
-      opacity: 0.88;
+      margin-top: 8px;
+      font-style: normal;
+      font-size: 0.42em;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: rgba(255,255,255,0.72);
     }
     .lede {
       margin: 0;
+      font-size: 17px;
+      color: rgba(255,255,255,0.78);
       max-width: 28em;
-      font-size: clamp(16px, 2.2vw, 19px);
-      font-weight: 500;
-      color: rgba(255,255,255,0.86);
-      animation: rise .85s .12s cubic-bezier(.2,.8,.2,1) both;
     }
-    .cta-row {
-      display: flex; flex-wrap: wrap; gap: 12px;
-      margin-top: 6px;
-      animation: rise .85s .18s cubic-bezier(.2,.8,.2,1) both;
-    }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
     .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-      padding: 14px 22px; border-radius: 999px;
-      font-weight: 700; font-size: 14.5px; border: 0; cursor: pointer;
-      transition: transform .15s ease, filter .15s ease, background .15s ease;
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 12px 20px; border-radius: 999px;
+      font-weight: 700; font-size: 14px;
+      transition: transform .15s ease, background .2s ease;
     }
-    .btn:hover { transform: translateY(-1px); filter: brightness(1.04); }
-    .btn:active { transform: scale(0.98); }
+    .btn:hover { transform: translateY(-1px); }
     .btn-primary {
       background: #fff; color: var(--indigo);
-      box-shadow: 0 14px 40px rgba(0,0,0,0.24);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.22);
     }
     .btn-ghost {
       background: rgba(255,255,255,0.10); color: #fff;
       box-shadow: inset 0 0 0 1px rgba(255,255,255,0.28);
-      backdrop-filter: blur(12px);
-    }
-
-    .hero-visual {
-      position: absolute;
-      right: max(2%, calc(50% - 560px));
-      bottom: 8%;
-      width: min(420px, 42vw);
-      aspect-ratio: 1;
-      border-radius: 50%;
-      background:
-        radial-gradient(circle at 42% 36%, rgba(255,255,255,0.34), transparent 42%),
-        radial-gradient(circle at 62% 68%, rgba(18, 196, 182, 0.55), transparent 58%),
-        rgba(255,255,255,0.05);
-      filter: blur(1px);
-      animation: drift 14s ease-in-out infinite alternate;
-      pointer-events: none;
-    }
-
-    @keyframes rise {
-      from { opacity: 0; transform: translateY(22px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes drift {
-      from { transform: translate(0, 0) scale(1); }
-      to { transform: translate(-28px, -36px) scale(1.05); }
-    }
-    @keyframes wavePulse {
-      0%, 100% { opacity: 0.55; transform: scaleY(1); }
-      50% { opacity: 0.9; transform: scaleY(1.08); }
-    }
-
-    /* ——— Body sections ——— */
-    .wrap {
-      width: min(1040px, calc(100% - 48px));
-      margin: 0 auto;
-    }
-    section { padding: 96px 0; }
-    .kicker {
-      margin: 0 0 12px;
-      font-size: 12px; font-weight: 700;
-      letter-spacing: 0.16em; text-transform: uppercase;
-      color: var(--cyan-deep);
-    }
-    .title {
-      margin: 0 0 14px;
-      font-family: Syne, sans-serif;
-      font-weight: 800;
-      font-size: clamp(30px, 4.8vw, 48px);
-      letter-spacing: -0.038em; line-height: 1.05;
-      color: var(--ink);
-    }
-    .lead {
-      margin: 0 0 48px;
-      max-width: 38em;
-      color: var(--muted);
-      font-size: 17px;
-    }
-
-    /* ——— Screenshots ——— */
-    .shot-hero {
-      margin: 0 0 28px;
-      border-radius: 22px;
-      overflow: hidden;
-      background: #0a121f;
-      box-shadow: 0 28px 70px rgba(6, 16, 28, 0.16);
-    }
-    .shot-hero img { width: 100%; height: auto; }
-    .shot-hero figcaption,
-    .shot-grid figcaption {
-      margin: 0;
-      padding: 12px 16px 14px;
-      font-size: 13px;
-      font-weight: 650;
-      color: var(--muted);
-      letter-spacing: 0.02em;
-      background: rgba(255,255,255,0.72);
-      border-top: 1px solid var(--line);
-    }
-    .shot-hero figcaption {
-      background: rgba(10, 18, 31, 0.92);
-      color: rgba(255,255,255,0.72);
-      border-top: 1px solid rgba(255,255,255,0.08);
-    }
-    .shot-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
-    }
-    .shot-grid figure {
-      margin: 0;
-      border-radius: 18px;
-      overflow: hidden;
-      background: #fff;
-      box-shadow: 0 14px 40px rgba(6, 16, 28, 0.08);
-      border: 1px solid var(--line);
-      transition: transform .35s ease, box-shadow .35s ease;
-    }
-    .shot-grid figure:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 22px 50px rgba(6, 16, 28, 0.12);
-    }
-    .shot-grid img { width: 100%; height: auto; }
-
-    .feature-list { border-top: 1px solid var(--line); }
-    .feature {
-      display: grid;
-      grid-template-columns: 88px minmax(0, 1fr);
-      gap: 8px 24px;
-      padding: 30px 8px;
-      border-bottom: 1px solid var(--line);
-      transition: background .2s ease;
-    }
-    .feature:hover {
-      background: linear-gradient(90deg, rgba(18,196,182,0.07), transparent 55%);
-    }
-    .feature-num {
-      font-family: Syne, sans-serif;
-      font-weight: 800; font-size: 26px;
-      letter-spacing: -0.04em;
-      color: var(--cyan-deep);
-      padding-top: 2px;
-    }
-    .feature h3 {
-      margin: 0 0 8px;
-      font-family: Syne, sans-serif;
-      font-size: 22px; font-weight: 700;
-      letter-spacing: -0.025em;
-    }
-    .feature p {
-      margin: 0; color: var(--muted); max-width: 48em; font-size: 15.5px;
-    }
-
-    .band {
-      margin: 8px 0 24px;
-      padding: 72px 0;
-      background:
-        radial-gradient(700px 360px at 100% 0%, rgba(18,196,182,0.14), transparent 60%),
-        linear-gradient(180deg, #e8f6f3 0%, var(--foam) 100%);
-      border-block: 1px solid rgba(10, 122, 146, 0.12);
-    }
-    .steps {
-      display: grid;
-      gap: 28px;
-      counter-reset: step;
-      margin-bottom: 40px;
-    }
-    .step {
-      display: grid;
-      grid-template-columns: 48px 1fr;
-      gap: 16px;
-      align-items: start;
-    }
-    .step::before {
-      counter-increment: step;
-      content: counter(step);
-      width: 44px; height: 44px; border-radius: 14px;
-      display: grid; place-items: center;
-      font-family: Syne, sans-serif; font-weight: 800;
-      background: linear-gradient(145deg, var(--indigo), var(--cyan-deep));
-      color: #fff;
-      box-shadow: 0 12px 28px rgba(10, 80, 120, 0.22);
-    }
-    .step h3 {
-      margin: 4px 0 6px;
-      font-family: Syne, sans-serif;
-      font-size: 19px; font-weight: 700;
-    }
-    .step p { margin: 0; color: var(--muted); font-size: 15px; max-width: 46em; }
-
-    .perm-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1px;
-      background: var(--line);
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      overflow: hidden;
-    }
-    .perm {
-      background: rgba(255,255,255,0.78);
-      padding: 18px 18px 16px;
-      min-height: 88px;
-      display: flex; flex-direction: column; justify-content: space-between; gap: 10px;
-    }
-    .perm b {
-      font-family: Syne, sans-serif;
-      font-size: 16px; font-weight: 700; letter-spacing: -0.02em;
-    }
-    .perm span { color: var(--muted); font-size: 13px; }
-
-    .terminal {
-      margin-top: 8px;
-      border-radius: 18px;
-      overflow: hidden;
-      background: #0a121f;
-      box-shadow: 0 24px 60px rgba(6, 16, 28, 0.18);
-    }
-    .terminal-bar {
-      display: flex; align-items: center; gap: 8px;
-      padding: 12px 16px;
-      background: rgba(255,255,255,0.04);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-    .terminal-bar i {
-      width: 10px; height: 10px; border-radius: 50%; display: block;
-      background: rgba(255,255,255,0.18);
-    }
-    .terminal-bar i:nth-child(1) { background: #ff5f57; }
-    .terminal-bar i:nth-child(2) { background: #febc2e; }
-    .terminal-bar i:nth-child(3) { background: #28c840; }
-    .terminal-bar span {
-      margin-left: 8px; color: rgba(255,255,255,0.45);
-      font-size: 12px; font-weight: 600;
-    }
-    .terminal pre {
-      margin: 0; padding: 20px 22px 24px;
-      color: #d8f6f0;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 13px; line-height: 1.75;
-      overflow-x: auto;
-      white-space: pre;
-    }
-    .terminal .c { color: #7dd6c8; }
-    .terminal .p { color: #9fb4c8; }
-
-    .install-actions {
-      display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px;
     }
     .btn-dark {
       background: var(--ink); color: #fff;
-      box-shadow: 0 12px 30px rgba(6, 16, 28, 0.16);
+      box-shadow: 0 10px 24px rgba(6, 16, 28, 0.14);
     }
     .btn-soft {
       background: rgba(6, 16, 28, 0.05); color: var(--ink);
       box-shadow: inset 0 0 0 1px var(--line);
     }
 
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .wrap {
+      width: min(920px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+    section { padding: 72px 0; }
+    .kicker {
+      margin: 0 0 10px;
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--cyan-deep);
+    }
+    .title {
+      margin: 0 0 10px;
+      font-family: Syne, sans-serif;
+      font-weight: 800;
+      font-size: clamp(28px, 4vw, 40px);
+      letter-spacing: -0.035em; line-height: 1.08;
+      color: var(--ink);
+    }
+    .lead {
+      margin: 0 0 32px;
+      color: var(--muted);
+      font-size: 16px;
+      max-width: 34em;
+    }
+
+    .shot {
+      margin: 0 0 18px;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #0a121f;
+      box-shadow: 0 22px 56px rgba(6, 16, 28, 0.14);
+    }
+    .shot img { width: 100%; }
+    .shots-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .shots-2 figure {
+      margin: 0;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+    .shots-2 figcaption {
+      padding: 10px 12px;
+      font-size: 13px;
+      font-weight: 650;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+    }
+
+    .features {
+      list-style: none;
+      margin: 0; padding: 0;
+      border-top: 1px solid var(--line);
+    }
+    .features li {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 8px 20px;
+      padding: 22px 4px;
+      border-bottom: 1px solid var(--line);
+    }
+    .features b {
+      font-family: Syne, sans-serif;
+      font-size: 15px;
+      color: var(--cyan-deep);
+      padding-top: 2px;
+    }
+    .features strong {
+      display: block;
+      font-family: Syne, sans-serif;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+    .features span { color: var(--muted); font-size: 15px; }
+
+    .install-actions {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      margin-bottom: 24px;
+    }
+    .note {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
     footer {
-      padding: 36px 0 48px;
+      padding: 28px 0 40px;
       border-top: 1px solid var(--line);
       text-align: center;
       color: var(--muted);
@@ -421,167 +239,99 @@
     footer .brand {
       font-family: Syne, sans-serif;
       font-weight: 700; color: var(--ink);
-      letter-spacing: -0.02em; margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     footer a { color: var(--cyan-deep); font-weight: 650; }
 
-    .reveal {
-      opacity: 0; transform: translateY(18px);
-      transition: opacity .7s ease, transform .7s ease;
-    }
-    .reveal.on { opacity: 1; transform: none; }
-
-    @media (max-width: 760px) {
-      .hero-inner, .wrap { width: calc(100% - 36px); }
-      .hero-visual { opacity: 0.55; width: 70vw; right: -20%; }
+    @media (max-width: 640px) {
       .nav-links a:not(.nav-cta) { display: none; }
-      .feature { grid-template-columns: 56px 1fr; gap: 6px 14px; padding: 24px 0; }
-      section { padding: 72px 0; }
-      .band { padding: 56px 0; }
-      .shot-grid { grid-template-columns: 1fr; gap: 14px; }
-      .shot-hero { border-radius: 16px; }
+      .shots-2 { grid-template-columns: 1fr; }
+      .features li { grid-template-columns: 48px 1fr; }
+      section { padding: 56px 0; }
     }
   </style>
 </head>
 <body>
   <header class="hero" id="top">
-    <div class="hero-noise" aria-hidden="true"></div>
-    <div class="hero-visual" aria-hidden="true"></div>
-    <div class="hero-wave" aria-hidden="true"></div>
     <div class="hero-inner">
       <nav class="nav" aria-label="主导航">
         <a class="nav-brand" href="#top">
-          <img src="assets/icon-256.png" width="34" height="34" alt="" />
+          <img src="assets/icon-256.png" width="32" height="32" alt="" />
           SupTools
         </a>
         <div class="nav-links">
-          <a href="#preview">界面</a>
           <a href="#features">功能</a>
-          <a href="#guide">上手</a>
-          <a href="#install">安装</a>
+          <a href="#install">下载</a>
           <a class="nav-cta" href="https://github.com/linux503/suptools">GitHub</a>
         </div>
       </nav>
-
       <div class="hero-stage">
-        <img class="brand-mark" src="assets/icon.png" width="132" height="132" alt="SupTools" />
+        <img class="brand-mark" src="assets/icon.png" width="88" height="88" alt="SupTools" />
         <h1 class="brand-name">SupTools<em>超级工具箱</em></h1>
-        <p class="lede">为 Mac 打造的一站式系统工具：监控、清理、卸载、启动项、截图录屏，开箱即用。</p>
+        <p class="lede">Mac 常用工具合集：看状态、清空间、卸软件、管启动项、截图录屏。</p>
         <div class="cta-row">
-          <a class="btn btn-primary" href="#install">开始安装</a>
-          <a class="btn btn-ghost" href="#preview">查看界面</a>
+          <a class="btn btn-primary" href="#install">下载安装</a>
+          <a class="btn btn-ghost" href="#preview">看界面</a>
         </div>
       </div>
     </div>
   </header>
 
   <section id="preview">
-    <div class="wrap reveal">
-      <p class="kicker">Preview</p>
-      <h2 class="title">真实产品界面</h2>
-      <p class="lead">总览监控、清理、卸载、启动项与权限引导——打开就能用的样子。</p>
-      <figure class="shot-hero">
-        <img src="assets/shot-overview-web.jpg" width="1360" height="980" alt="SupTools 总览：CPU、内存、网络与磁盘指标" loading="eager" />
-        <figcaption>总览 · 实时系统指标</figcaption>
+    <div class="wrap">
+      <p class="kicker">界面</p>
+      <h2 class="title">打开就是这些</h2>
+      <p class="lead">侧栏只有几项，点进去就能用。</p>
+      <figure class="shot">
+        <img src="assets/shot-overview-web.jpg" width="1360" height="980" alt="SupTools 总览" loading="eager" />
       </figure>
-      <div class="shot-grid">
+      <div class="shots-2">
         <figure>
-          <img src="assets/shot-clean-web.jpg" width="1360" height="980" alt="SupTools 清理：可回收空间与分类列表" loading="lazy" />
+          <img src="assets/shot-clean-web.jpg" width="1360" height="980" alt="清理" loading="lazy" />
           <figcaption>清理</figcaption>
         </figure>
         <figure>
-          <img src="assets/shot-uninstall-web.jpg" width="1360" height="980" alt="SupTools 卸载：已安装应用列表" loading="lazy" />
-          <figcaption>卸载</figcaption>
-        </figure>
-        <figure>
-          <img src="assets/shot-startup-web.jpg" width="1360" height="980" alt="SupTools 启动项：登录项与 LaunchAgent" loading="lazy" />
+          <img src="assets/shot-startup-web.jpg" width="1360" height="980" alt="启动项" loading="lazy" />
           <figcaption>启动项</figcaption>
-        </figure>
-        <figure>
-          <img src="assets/shot-perms-web.jpg" width="1360" height="980" alt="SupTools 权限：系统隐私权限状态" loading="lazy" />
-          <figcaption>权限</figcaption>
         </figure>
       </div>
     </div>
   </section>
 
   <section id="features">
-    <div class="wrap reveal">
-      <p class="kicker">Tools</p>
-      <h2 class="title">六个常用工具，一个窗口搞定</h2>
-      <p class="lead">侧栏按「监控 / 工具 / 设置」分组。工具区覆盖从清理到录屏的日常运维场景。</p>
-      <div class="feature-list">
-        <article class="feature"><div class="feature-num">01</div><div><h3>清理</h3><p>扫描缓存、浏览器、开发工具、Docker、大文件与废纸篓；默认勾选安全项，谨慎项手动确认。</p></div></article>
-        <article class="feature"><div class="feature-num">02</div><div><h3>卸载</h3><p>列出已安装应用，查找偏好设置、缓存、容器等关联残留，移至废纸篓或彻底删除。</p></div></article>
-        <article class="feature"><div class="feature-num">03</div><div><h3>启动项</h3><p>管理登录项与 LaunchAgent，一键关闭开机自启；系统级项目可跳转系统设置。</p></div></article>
-        <article class="feature"><div class="feature-num">04</div><div><h3>截图 / 录屏</h3><p>框选、窗口、全屏截图与录屏，支持标记编辑、麦克风与全局快捷键。</p></div></article>
-        <article class="feature"><div class="feature-num">05</div><div><h3>连通性</h3><p>一键检测 DNS、TCP、HTTP 延迟，快速判断网络是否畅通。</p></div></article>
-        <article class="feature"><div class="feature-num">06</div><div><h3>权限引导</h3><p>集中检测屏幕录制、辅助功能、麦克风、完全磁盘访问等；开启后显示「已开启」成功状态。</p></div></article>
-      </div>
+    <div class="wrap">
+      <p class="kicker">功能</p>
+      <h2 class="title">就这几样</h2>
+      <p class="lead">不做花哨面板，只保留日常真正会点的功能。</p>
+      <ul class="features">
+        <li><b>01</b><div><strong>总览</strong><span>CPU、内存、网络、磁盘，以及占用最高的进程。</span></div></li>
+        <li><b>02</b><div><strong>清理</strong><span>扫描缓存、浏览器、开发文件和废纸篓，勾选后清理。</span></div></li>
+        <li><b>03</b><div><strong>卸载</strong><span>删除应用，并尽量扫掉关联残留。</span></div></li>
+        <li><b>04</b><div><strong>启动项</strong><span>关闭登录自启与 LaunchAgent。</span></div></li>
+        <li><b>05</b><div><strong>截图 / 录屏</strong><span>框选、窗口、全屏；支持标记与快捷键。</span></div></li>
+        <li><b>06</b><div><strong>权限</strong><span>一次性检查并打开系统隐私权限。</span></div></li>
+      </ul>
     </div>
   </section>
 
-  <div class="band" id="guide">
-    <div class="wrap reveal">
-      <p class="kicker">Guide</p>
-      <h2 class="title">三步开始使用</h2>
-      <p class="lead">装好应用后，先把推荐权限开齐，功能会稳定很多。</p>
-      <div class="steps">
-        <div class="step"><div><h3>安装到「应用程序」</h3><p>运行打包脚本，或把 <code>SupTools.app</code> 拖进 /Applications，然后打开。</p></div></div>
-        <div class="step"><div><h3>打开「工具 → 权限」</h3><p>逐项点「去开启 / 请求授权」，在系统设置勾选 SupTools；返回后会自动检测并提示成功。</p></div></div>
-        <div class="step"><div><h3>按需使用工具</h3><p>清理与卸载建议开启完全磁盘访问；截图录屏需要屏幕录制；全局快捷键需要辅助功能。</p></div></div>
-      </div>
-      <div class="perm-grid" aria-label="权限清单">
-        <div class="perm"><b>屏幕录制</b><span>截图 · 录屏</span></div>
-        <div class="perm"><b>辅助功能</b><span>全局快捷键</span></div>
-        <div class="perm"><b>自动化</b><span>启动项 · 剪贴板 · Finder</span></div>
-        <div class="perm"><b>完全磁盘访问</b><span>清理 · 卸载（建议）</span></div>
-        <div class="perm"><b>麦克风</b><span>录屏旁白（可选）</span></div>
-        <div class="perm"><b>通知</b><span>阈值告警（可选）</span></div>
-      </div>
-    </div>
-  </div>
-
-  <section class="install" id="install">
-    <div class="wrap reveal">
-      <p class="kicker">Install</p>
-      <h2 class="title">下载安装</h2>
-      <p class="lead">macOS 13+。优先下载对应芯片的 DMG；也可以从源码一键打包安装。</p>
-      <div class="install-actions" style="margin-top:0;margin-bottom:28px">
-        <a class="btn btn-dark" href="https://github.com/linux503/suptools/releases/latest">下载最新版本</a>
-        <a class="btn btn-soft" href="https://github.com/linux503/suptools">查看源码</a>
-      </div>
-      <div class="terminal">
-        <div class="terminal-bar" aria-hidden="true"><i></i><i></i><i></i><span>Terminal — bash · 源码安装</span></div>
-        <pre><span class="c">#</span> <span class="p">clone</span>
-git clone https://github.com/linux503/suptools.git
-cd suptools
-
-<span class="c">#</span> <span class="p">dependencies</span>
-python3 -m pip install -r requirements.txt
-
-<span class="c">#</span> <span class="p">build &amp; install</span>
-./Scripts/install-to-applications.sh</pre>
-      </div>
+  <section id="install">
+    <div class="wrap">
+      <p class="kicker">下载</p>
+      <h2 class="title">安装</h2>
+      <p class="lead">macOS 13+。按芯片选 DMG，拖到「应用程序」即可。</p>
       <div class="install-actions">
-        <a class="btn btn-soft" href="#top">回到顶部</a>
+        <a class="btn btn-dark" href="https://github.com/linux503/suptools/releases/latest">下载最新版</a>
+        <a class="btn btn-soft" href="https://github.com/linux503/suptools">源码</a>
       </div>
+      <p class="note">首次打开后进「权限」，按提示开启屏幕录制与辅助功能。清理 / 卸载建议再开完全磁盘访问。</p>
     </div>
   </section>
 
   <footer>
     <div class="wrap">
       <div class="brand">SupTools</div>
-      <p>超级工具箱 · 开源 macOS 工具集</p>
-      <p style="margin-top:10px"><a href="https://github.com/linux503/suptools">github.com/linux503/suptools</a></p>
+      <p><a href="https://github.com/linux503/suptools">github.com/linux503/suptools</a></p>
     </div>
   </footer>
-
-  <script>
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('on'); });
-    }, { threshold: 0.12 });
-    document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
-  </script>
 </body>
 </html>

@@ -1810,23 +1810,13 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
       <div class="brand-text"><span class="name">SupTools</span><small>超级工具箱</small></div>
     </div>
     <div class="nav" id="nav">
-      <div class="nav-label">监控</div>
       <button data-page="overview" class="active"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>总览</button>
-      <button data-page="cpu"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"/></svg></span>CPU</button>
-      <button data-page="memory"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="10" rx="2"/><path d="M7 7V5M12 7V5M17 7V5M7 19v-2M12 19v-2M17 19v-2"/></svg></span>内存</button>
-      <button data-page="disk"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></span>硬盘</button>
-      <button data-page="network"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 14c0 3.9 3.1 7 7 7s7-3.1 7-7"/></svg></span>网络</button>
-      <button data-page="processes"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/></svg></span>进程</button>
-
-      <div class="nav-label">工具</div>
       <button data-page="clean"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/></svg></span>清理</button>
       <button data-page="uninstall"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6l1 2h4v2H4V5h4l1-2z"/><path d="M6 9l1 11a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-11"/><path d="M10 12v6M14 12v6"/></svg></span>卸载</button>
       <button data-page="startup"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v10"/><path d="M8 9l4 4 4-4"/><path d="M5 19h14"/><path d="M7 15h10"/></svg></span>启动项</button>
-      <button data-page="perms"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.2 2.2L17 4l-.4 2.8L19 9l-2.4.8L17 12.5 14.2 11 12 13.2 9.8 11 7 12.5l.4-2.7L5 9l2.4-.2L7 6l2.8 1.2L12 3z"/><path d="M5 19h14"/><path d="M8 15h8"/></svg></span>权限</button>
       <button data-page="shot"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h3l2-2h6l2 2h3v11H4V8z"/><circle cx="12" cy="13" r="3.5"/></svg></span>截图</button>
       <button data-page="rec"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg></span>录屏</button>
-      <button data-page="conn"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M5.5 5.5a9 9 0 0 0 0 12.7M18.5 5.5a9 9 0 0 1 0 12.7M2.5 9a14 14 0 0 0 0 6M21.5 9a14 14 0 0 1 0 6"/></svg></span>连通性</button>
-
+      <button data-page="perms"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.2 2.2L17 4l-.4 2.8L19 9l-2.4.8L17 12.5 14.2 11 12 13.2 9.8 11 7 12.5l.4-2.7L5 9l2.4-.2L7 6l2.8 1.2L12 3z"/><path d="M5 19h14"/><path d="M8 15h8"/></svg></span>权限</button>
       <div class="nav-sep"></div>
       <button data-page="settings"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9c.2.6.7 1 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>设置</button>
     </div>
@@ -1855,8 +1845,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
       <section class="page active" id="page-overview">
         <div class="head"><h2 id="ov-header">加载中…</h2><p id="ov-sub">正在连接本机采集器…</p></div>
         <div class="alerts" id="ov-alerts"></div>
-        <div class="section-gap">主机信息</div>
-        <div class="info-grid">
+        <div class="info-grid" hidden aria-hidden="true">
           <div class="info-pill"><div class="k">芯片</div><div class="v" id="ov-chip">—</div></div>
           <div class="info-pill"><div class="k">核心</div><div class="v" id="ov-cores">—</div></div>
           <div class="info-pill"><div class="k">负载 1 / 5 / 15</div><div class="v" id="ov-load">—</div></div>
@@ -1864,16 +1853,15 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
           <div class="info-pill"><div class="k">内存压力</div><div class="v"><span class="pressure-pill" id="ov-pressure">—</span></div></div>
           <div class="info-pill" id="ov-batt-pill"><div class="k">电池</div><div class="v" id="ov-battery">—</div></div>
         </div>
-        <div class="section-gap">关键指标</div>
         <div class="kpi-grid" id="ov-quick">
           <div class="kpi" style="--c:var(--cpu)"><div class="label"><i></i>CPU</div><div class="value" id="q-cpu">—</div><div class="sub" id="q-cpu-s"></div></div>
           <div class="kpi" style="--c:var(--mem)"><div class="label"><i></i>内存</div><div class="value" id="q-mem">—</div><div class="sub" id="q-mem-s"></div></div>
           <div class="kpi" style="--c:var(--down)"><div class="label"><i></i>下行</div><div class="value sm down" id="q-down">—</div><div class="sub" id="q-up"></div></div>
           <div class="kpi" style="--c:var(--disk)"><div class="label"><i></i>磁盘</div><div class="value" id="q-disk">—</div><div class="sub" id="q-disk-s"></div></div>
         </div>
-        <div class="section-gap">详情</div>
+        <div class="section-gap">进程</div>
         <div class="grid">
-          <div class="card h-metric" style="--c:var(--cpu)">
+          <div class="card h-metric" hidden aria-hidden="true" style="--c:var(--cpu)">
             <h3><i></i>CPU</h3>
             <div class="card-body">
               <div class="metric-row">
@@ -1883,7 +1871,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
               <canvas class="spark" id="ov-cpu-spark"></canvas>
             </div>
           </div>
-          <div class="card h-metric" style="--c:var(--mem)">
+          <div class="card h-metric" hidden aria-hidden="true" style="--c:var(--mem)">
             <h3><i></i>内存</h3>
             <div class="card-body">
               <div class="metric-row">
@@ -1897,7 +1885,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
               <canvas class="spark" id="ov-mem-spark"></canvas>
             </div>
           </div>
-          <div class="card h-metric" style="--c:var(--down)">
+          <div class="card h-metric" hidden aria-hidden="true" style="--c:var(--down)">
             <h3><i></i>网络</h3>
             <div class="card-body">
               <div class="rate-row">
@@ -1908,7 +1896,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
               <canvas class="spark" id="ov-net-spark"></canvas>
             </div>
           </div>
-          <div class="card h-metric" style="--c:var(--disk)">
+          <div class="card h-metric" hidden aria-hidden="true" style="--c:var(--disk)">
             <h3><i></i>硬盘</h3>
             <div class="card-body">
               <div class="kv-row" style="border:0;padding-top:0"><span class="k" id="ov-disk-name">—</span><span class="v" id="ov-disk-pct-label">—</span></div>
