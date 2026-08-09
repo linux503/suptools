@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SupTools · 超级工具箱</title>
+  <meta name="description" content="SupTools — macOS 超级工具箱：系统监控、智能清理、软件卸载、启动项、截图录屏与权限引导。" />
+  <meta property="og:title" content="SupTools · 超级工具箱" />
+  <meta property="og:description" content="为 Mac 打造的一站式系统工具箱。" />
+  <meta property="og:image" content="assets/icon.png" />
+  <link rel="icon" href="assets/icon-256.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,500&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #07111f;
+      --ink-soft: #1a2a40;
+      --mist: #e8f4f2;
+      --foam: #f4fbfa;
+      --cyan: #14c4b8;
+      --cyan-deep: #0a7f9c;
+      --indigo: #1a2a78;
+      --line: rgba(7, 17, 31, 0.10);
+      --text: #0d1b2a;
+      --muted: #5a6b7d;
+      --radius: 28px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: "DM Sans", "PingFang SC", "Hiragino Sans GB", sans-serif;
+      background: var(--foam);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    /* ——— Hero: one composition, full-bleed ——— */
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      overflow: hidden;
+      color: #fff;
+      background:
+        radial-gradient(1200px 700px at 18% 12%, rgba(56, 220, 210, 0.35), transparent 55%),
+        radial-gradient(900px 600px at 88% 18%, rgba(40, 120, 220, 0.28), transparent 50%),
+        linear-gradient(155deg, #0b1740 0%, #0d4f7a 48%, #0fb5a8 100%);
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: radial-gradient(ellipse at 50% 30%, #000 20%, transparent 75%);
+      pointer-events: none;
+    }
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 28px 28px 56px;
+      min-height: 100svh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: Syne, "DM Sans", sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+    }
+    .nav-brand img {
+      width: 36px; height: 36px; border-radius: 9px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+    .nav-links {
+      display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+    }
+    .nav-links a {
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.82);
+      transition: background .2s ease, color .2s ease;
+    }
+    .nav-links a:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+    .hero-stage {
+      display: grid;
+      align-content: center;
+      gap: 28px;
+      padding: 48px 0 24px;
+      max-width: 720px;
+    }
+    .brand-mark {
+      width: min(148px, 28vw);
+      height: auto;
+      border-radius: 28px;
+      box-shadow:
+        0 30px 80px rgba(0, 20, 40, 0.45),
+        0 0 0 1px rgba(255,255,255,0.12);
+      animation: floatIn .9s cubic-bezier(.2,.8,.2,1) both;
+    }
+    .brand-name {
+      margin: 0;
+      font-family: Syne, "DM Sans", sans-serif;
+      font-weight: 800;
+      font-size: clamp(48px, 9vw, 88px);
+      line-height: 0.95;
+      letter-spacing: -0.045em;
+      animation: floatIn .9s .08s cubic-bezier(.2,.8,.2,1) both;
+    }
+    .brand-name span {
+      display: block;
+      font-size: 0.38em;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      opacity: 0.78;
+      margin-top: 12px;
+      font-family: "DM Sans", sans-serif;
+    }
+    .lede {
+      margin: 0;
+      max-width: 34ch;
+      font-size: clamp(17px, 2.4vw, 20px);
+      font-weight: 500;
+      color: rgba(255,255,255,0.88);
+      animation: floatIn .9s .16s cubic-bezier(.2,.8,.2,1) both;
+    }
+    .cta-row {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      animation: floatIn .9s .24s cubic-bezier(.2,.8,.2,1) both;
+    }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 14px 22px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 15px;
+      border: 0;
+      cursor: pointer;
+      transition: transform .15s ease, filter .15s ease, background .15s ease;
+    }
+    .btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary {
+      background: #fff;
+      color: var(--indigo);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.22);
+    }
+    .btn-ghost {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.28);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero-orb {
+      position: absolute;
+      right: -8%;
+      bottom: -18%;
+      width: min(640px, 70vw);
+      height: min(640px, 70vw);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 40% 35%, rgba(255,255,255,0.28), transparent 40%),
+        radial-gradient(circle at 60% 70%, rgba(20, 196, 184, 0.55), transparent 55%),
+        rgba(255,255,255,0.06);
+      filter: blur(2px);
+      animation: drift 12s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+
+    @keyframes floatIn {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes drift {
+      from { transform: translate(0, 0) scale(1); }
+      to { transform: translate(-24px, -30px) scale(1.04); }
+    }
+
+    /* ——— Sections ——— */
+    section {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 88px 28px;
+    }
+    .section-kicker {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--cyan-deep);
+      margin: 0 0 10px;
+    }
+    .section-title {
+      margin: 0 0 14px;
+      font-family: Syne, "DM Sans", sans-serif;
+      font-weight: 800;
+      font-size: clamp(28px, 4.5vw, 44px);
+      letter-spacing: -0.035em;
+      line-height: 1.1;
+      color: var(--ink);
+    }
+    .section-lead {
+      margin: 0 0 40px;
+      max-width: 46ch;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .feature-rail {
+      display: grid;
+      gap: 0;
+      border-top: 1px solid var(--line);
+    }
+    .feature {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 18px;
+      padding: 28px 0;
+      border-bottom: 1px solid var(--line);
+      align-items: start;
+      transition: background .2s ease;
+    }
+    .feature:hover { background: linear-gradient(90deg, rgba(20,196,184,0.06), transparent 60%); }
+    .feature-num {
+      font-family: Syne, sans-serif;
+      font-weight: 800;
+      font-size: 28px;
+      letter-spacing: -0.04em;
+      color: var(--cyan-deep);
+      opacity: 0.85;
+      padding-top: 2px;
+    }
+    .feature h3 {
+      margin: 0 0 6px;
+      font-family: Syne, sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .feature p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 52ch;
+    }
+
+    .guide {
+      background:
+        radial-gradient(700px 400px at 100% 0%, rgba(20,196,184,0.12), transparent 60%),
+        linear-gradient(180deg, #eef8f6 0%, var(--foam) 100%);
+      border-radius: var(--radius);
+      padding: 48px 36px;
+      margin: 0 28px 88px;
+      max-width: 1120px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .steps {
+      display: grid;
+      gap: 22px;
+      counter-reset: step;
+    }
+    .step {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      width: 40px; height: 40px;
+      border-radius: 14px;
+      display: grid; place-items: center;
+      font-family: Syne, sans-serif;
+      font-weight: 800;
+      background: linear-gradient(145deg, var(--indigo), var(--cyan-deep));
+      color: #fff;
+      box-shadow: 0 10px 24px rgba(10, 80, 120, 0.25);
+    }
+    .step h3 {
+      margin: 2px 0 4px;
+      font-size: 18px;
+      font-family: Syne, sans-serif;
+      font-weight: 700;
+    }
+    .step p { margin: 0; color: var(--muted); font-size: 15px; }
+
+    .perms {
+      display: grid;
+      gap: 10px;
+      margin-top: 28px;
+    }
+    .perm {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.72);
+      box-shadow: inset 0 0 0 1px var(--line);
+      flex-wrap: wrap;
+    }
+    .perm b { font-weight: 700; }
+    .perm span { color: var(--muted); font-size: 13px; }
+
+    .install {
+      padding-bottom: 40px;
+    }
+    .code {
+      margin-top: 20px;
+      padding: 18px 20px;
+      border-radius: 18px;
+      background: var(--ink);
+      color: #d7f7f2;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      overflow-x: auto;
+      box-shadow: 0 20px 50px rgba(7, 17, 31, 0.18);
+    }
+    .code .c { color: #7dd3c7; }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    footer a { color: var(--cyan-deep); font-weight: 600; }
+
+    @media (max-width: 720px) {
+      .hero-inner { padding: 20px 20px 40px; }
+      .guide { margin: 0 16px 64px; padding: 32px 20px; }
+      section { padding: 64px 20px; }
+      .feature { grid-template-columns: 48px 1fr; }
+      .nav-links a:not(.btn-like) { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero" id="top">
+    <div class="hero-orb" aria-hidden="true"></div>
+    <div class="hero-inner">
+      <nav class="nav" aria-label="主导航">
+        <a class="nav-brand" href="#top">
+          <img src="assets/icon-256.png" width="36" height="36" alt="" />
+          SupTools
+        </a>
+        <div class="nav-links">
+          <a href="#features">功能</a>
+          <a href="#guide">上手</a>
+          <a href="#install">安装</a>
+          <a class="btn-ghost btn" style="padding:8px 14px;font-size:13px" href="https://github.com/linux503/suptools" id="github-link">GitHub</a>
+        </div>
+      </nav>
+
+      <div class="hero-stage">
+        <img class="brand-mark" src="assets/icon.png" width="148" height="148" alt="SupTools" />
+        <h1 class="brand-name">SupTools<span>超级工具箱</span></h1>
+        <p class="lede">为 Mac 打造的一站式系统工具：监控、清理、卸载、启动项、截图录屏，开箱即用。</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#install">开始安装</a>
+          <a class="btn btn-ghost" href="#guide">查看引导</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section id="features">
+    <p class="section-kicker">Tools</p>
+    <h2 class="section-title">六个常用工具，一个窗口搞定</h2>
+    <p class="section-lead">侧栏按「监控 / 工具 / 设置」分组。下面是工具区每一项在做什么，以及你需要开通的权限。</p>
+
+    <div class="feature-rail">
+      <article class="feature">
+        <div class="feature-num">01</div>
+        <div>
+          <h3>清理</h3>
+          <p>扫描缓存、浏览器、开发工具、Docker、大文件与废纸篓；默认勾选安全项，谨慎项手动确认。</p>
+        </div>
+      </article>
+      <article class="feature">
+        <div class="feature-num">02</div>
+        <div>
+          <h3>卸载</h3>
+          <p>列出已安装应用，查找偏好设置、缓存、容器等关联残留，移至废纸篓或彻底删除。</p>
+        </div>
+      </article>
+      <article class="feature">
+        <div class="feature-num">03</div>
+        <div>
+          <h3>启动项</h3>
+          <p>管理登录项与 LaunchAgent，一键关闭开机自启；系统级项目可跳转系统设置。</p>
+        </div>
+      </article>
+      <article class="feature">
+        <div class="feature-num">04</div>
+        <div>
+          <h3>截图 / 录屏</h3>
+          <p>框选、窗口、全屏截图与录屏，支持标记编辑、麦克风与全局快捷键。</p>
+        </div>
+      </article>
+      <article class="feature">
+        <div class="feature-num">05</div>
+        <div>
+          <h3>连通性</h3>
+          <p>一键检测 DNS、TCP、HTTP 延迟，快速判断网络是否畅通。</p>
+        </div>
+      </article>
+      <article class="feature">
+        <div class="feature-num">06</div>
+        <div>
+          <h3>权限引导</h3>
+          <p>集中检测屏幕录制、辅助功能、麦克风、完全磁盘访问等；开启后显示「已开启」成功状态。</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <div class="guide" id="guide">
+    <p class="section-kicker">Guide</p>
+    <h2 class="section-title">三步开始使用</h2>
+    <p class="section-lead">装好应用后，先把推荐权限开齐，功能会稳定很多。</p>
+    <div class="steps">
+      <div class="step">
+        <div>
+          <h3>安装到「应用程序」</h3>
+          <p>运行打包脚本，或把 <code>SupTools.app</code> 拖进 /Applications，然后打开。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <h3>打开「工具 → 权限」</h3>
+          <p>逐项点「去开启 / 请求授权」，在系统设置勾选 SupTools；返回后会自动检测并提示成功。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <h3>按需使用工具</h3>
+          <p>清理与卸载建议开启完全磁盘访问；截图录屏需要屏幕录制；全局快捷键需要辅助功能。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="perms" aria-label="权限清单">
+      <div class="perm"><b>屏幕录制</b><span>截图 · 录屏</span></div>
+      <div class="perm"><b>辅助功能</b><span>全局快捷键</span></div>
+      <div class="perm"><b>自动化</b><span>启动项 · 剪贴板 · Finder</span></div>
+      <div class="perm"><b>完全磁盘访问</b><span>清理 · 卸载（建议）</span></div>
+      <div class="perm"><b>麦克风</b><span>录屏旁白（可选）</span></div>
+    </div>
+  </div>
+
+  <section class="install" id="install">
+    <p class="section-kicker">Install</p>
+    <h2 class="section-title">从源码安装</h2>
+    <p class="section-lead">需要 Python 3.9+ 与 macOS 13+。克隆仓库后一键打包安装到 /Applications。</p>
+    <div class="code">
+      <div><span class="c">#</span> 克隆</div>
+      <div>git clone https://github.com/linux503/suptools.git</div>
+      <div>cd suptools</div>
+      <div>&nbsp;</div>
+      <div><span class="c">#</span> 依赖（开发运行）</div>
+      <div>python3 -m pip install -r requirements.txt</div>
+      <div>&nbsp;</div>
+      <div><span class="c">#</span> 打包并安装到「应用程序」</div>
+      <div>./Scripts/install-to-applications.sh</div>
+    </div>
+    <div class="cta-row" style="margin-top:24px">
+      <a class="btn btn-primary" href="https://github.com/linux503/suptools" id="github-link-2" style="background:var(--ink);color:#fff">在 GitHub 查看源码</a>
+      <a class="btn btn-ghost" href="#top" style="background:rgba(7,17,31,0.06);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)">回到顶部</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>SupTools · 超级工具箱 · 开源 macOS 工具集</p>
+    <p style="margin-top:8px"><a href="https://github.com/linux503/suptools" id="github-link-3">GitHub</a></p>
+  </footer>
+
+  <script>
+    // Filled after publish; also rewrite if pages URL known
+    (function () {
+      const host = location.hostname || "";
+      // https://USER.github.io/REPO/ → infer repo
+      const m = host.match(/^([^.]+)\.github\.io$/i);
+      if (!m) return;
+      const user = m[1];
+      const parts = location.pathname.replace(/\/+$/, "").split("/").filter(Boolean);
+      const repo = parts[0] || "suptools";
+      const url = "https://github.com/" + user + "/" + repo;
+      ["github-link", "github-link-2", "github-link-3"].forEach(function (id) {
+        const el = document.getElementById(id);
+        if (el) el.href = url;
+      });
+      document.querySelectorAll(".code").forEach(function (el) {
+        el.innerHTML = el.innerHTML
+          .replaceAll("linux503/suptools", user + "/" + repo)
+          .replaceAll(">REPO<", ">" + repo + "<")
+          .replace(/cd suptools/g, "cd " + repo)
+          .replace(/git clone https:\/\/github\.com\/OWNER\/REPO\.git/g, "git clone " + url + ".git");
+      });
+    })();
+  </script>
+</body>
+</html>

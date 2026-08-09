@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# App packaging artifacts (regenerable)
+dist/
+build/
+*.app/
+Native/**/*.o
+
+# Logs / local state
+*.log
+Library/
+.idea/
+.vscode/
+*.swp
+
+# Keep release assets we want in repo
+!assets/
+!Resources/
+!Resources/**/*.png
+!Resources/**/*.plist
+!Resources/**/*.icns
