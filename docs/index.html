@@ -20,6 +20,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="more-apps.css" />
   <style>
     :root {
       --bg: #f2f6f5;
@@ -657,6 +658,7 @@
         <a href="#features" data-i18n="navFeatures">功能</a>
         <a href="#product" data-i18n="navProduct">界面</a>
         <a href="#install" data-i18n="navDownload">下载</a>
+        <span data-more-apps="suptools" data-lang="zh"></span>
         <a href="https://github.com/linux503/suptools">GitHub</a>
         <a class="nav-dl" href="#install" data-i18n="navGet">获取安装包</a>
         <div class="lang-switch" role="group" aria-label="Language">
@@ -1014,6 +1016,11 @@
 
         try { localStorage.setItem(STORAGE_KEY, lang); } catch (e) {}
 
+        document.querySelectorAll("[data-more-apps]").forEach(function (el) {
+          el.setAttribute("data-lang", lang);
+        });
+        if (window.Linux503MoreApps) window.Linux503MoreApps.refresh();
+
         var url = new URL(location.href);
         url.searchParams.set("lang", lang);
         history.replaceState(null, "", url.pathname + url.search + url.hash);
@@ -1157,5 +1164,6 @@
       });
     })();
   </script>
+  <script src="more-apps.js" defer></script>
 </body>
 </html>
